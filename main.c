@@ -6,80 +6,39 @@
 #include <zip.h>
 #include <errno.h>
 
+
+
+struct zip *open_zip(char *filename) { //fonction qui va retourner notre structure zip pour l"utiliser dans le main et autre fonction
+    struct zip *zip; //on crée une structure zip definit dans la librairie zip.h
+    int err;
+
+    zip = zip_open(filename, 0, &err); //ouvre le zip et stocke le resultat dans la structure zip
+    if (zip == NULL) {
+        printf("can't open zip archive '%s': %s\n", filename, zip_strerror(zip)); // a modifier afin que si une erreur précise , on puisse l'afficher
+        exit(1);
+    }
+
+    return zip; //on retourne la structure zip afin de l'utiliser dans le main
+}
+
+void close_zip(struct zip *zip) {
+    if (zip_close(zip) < 0) { //on ferme le fichier zip avec la fonction zip_close qui prend en parametre la structure zip et retourne -1 si il y a une erreur
+        printf("can't close zip archive '%s': %s\n", "test.zip", zip_strerror(zip));
+        exit(1);
+    }
+    printf("closing zip archive...\n");
+}
+
 int main() {
     struct zip *zip;
-    struct zip_source *source;
-    struct zip_stat st;
-    char buf[100];
-    int err;
-    int len;
-    int fd;
+    int num_files;
 
+    zip = open_zip("test.zip");
 
-    //create a new zip archive
-    zip = zip_open("test.zip", ZIP_CREATE, &err);
-    if (zip == NULL) {
-        zip_error_to_str(buf, sizeof(buf), err, errno);
-        printf("can't open zip archive '%s': %s\n", "test.zip", buf);
-        exit(1);
-    }
+    num_files = zip_get_num_files(zip); // pour tester si ça ouvrait bien , print le nombre de fichier
+    printf("number of files in zip: %d\n", num_files);
 
-    //add a file to the archive
-    source = zip_source_file(zip, "test.txt", 0, -1);
-    if (source == NULL) {
-        zip_error_to_str(buf, sizeof(buf), errno, errno);
-        printf("can't open file '%s': %s\n", "test.txt", buf);
-        exit(1);
-    }
-    if (zip_file_add(zip, "test.txt", source, ZIP_FL_ENC_UTF_8) < 0) {
-        zip_error_to_str(buf, sizeof(buf), errno, errno);
-        printf("can't add file '%s': %s\n", "test.txt", buf);
-        exit(1);
-    }
+    close_zip(zip);
 
-    //close the archive
-    if (zip_close(zip) < 0) {
-        zip_error_to_str(buf, sizeof(buf), errno, errno);
-        printf("can't close zip archive '%s': %s\n", "test.zip", buf);
-        exit(1);
-    }
-
-    //open the archive again
-    zip = zip_open("test.zip", 0, &err);
-    if (zip == NULL) {
-        zip_error_to_str(buf, sizeof(buf), err, errno);
-        printf("can't open zip archive '%s': %s\n", "test.zip", buf);
-        exit(1);
-    }
-
-    //get the stat of the file
-    if (zip_stat(zip, "test.txt", 0, &st) < 0) {
-        zip_error_to_str(buf, sizeof(buf), errno, errno);
-        printf("can't stat file '%s': %s\n", "test.txt", buf);
-        exit(1);
-    }
-
-    //read the file and print the contents
-    fd = (int) zip_fopen(zip, "test.txt", 0);
-    if (fd < 0) {
-        zip_error_to_str(buf, sizeof(buf), errno, errno);
-    }
-    struct zip *zip_file = zip_open("test.zip", ZIP_RDONLY, NULL);
-    if (zip_file == NULL) {
-        printf("Failed to open ZIP file!\n");
-        return 1;
-    }
-
-    // Get the number of files in the ZIP
-    int num_files = zip_get_num_files(zip_file);
-    printf("Number of files in the ZIP: %d\n", num_files);
-
-    // Print the names of all files in the ZIP
-    for (int i = 0; i < num_files; i++) {
-        const char *file_name = zip_get_name(zip_file, i, 0);
-        printf("File %d: %s\n", i + 1, file_name);
-    }
-
-    // Close the ZIP file
-    zip_close(zip_file);
+    return 0;
 }
