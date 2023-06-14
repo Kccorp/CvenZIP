@@ -1,28 +1,44 @@
+//simple libzip example to create a zip file and add a file to it
+
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <zip.h>
-#include <getopt.h>
+#include <errno.h>
+
+
+
+struct zip *open_zip(char *filename) { //fonction qui va retourner notre structure zip pour l"utiliser dans le main et autre fonction
+    struct zip *zip; //on crée une structure zip definit dans la librairie zip.h
+    int err;
+
+    zip = zip_open(filename, 0, &err); //ouvre le zip et stocke le resultat dans la structure zip
+    if (zip == NULL) {
+        printf("can't open zip archive '%s': %s\n", filename, zip_strerror(zip)); // a modifier afin que si une erreur précise , on puisse l'afficher
+        exit(1);
+    }
+
+    return zip; //on retourne la structure zip afin de l'utiliser dans le main
+}
+
+void close_zip(struct zip *zip) {
+    if (zip_close(zip) < 0) { //on ferme le fichier zip avec la fonction zip_close qui prend en parametre la structure zip et retourne -1 si il y a une erreur
+        printf("can't close zip archive '%s': %s\n", "test.zip", zip_strerror(zip));
+        exit(1);
+    }
+    printf("closing zip archive...\n");
+}
 
 int main() {
+    struct zip *zip;
+    int num_files;
 
-    // Open the ZIP file
-    struct zip *zip_file = zip_open("test.zip", ZIP_RDONLY, NULL);
-    if (zip_file == NULL) {
-        printf("Failed to open ZIP file!\n");
-        return 1;
-    }
+    zip = open_zip("test.zip");
 
-    // Get the number of files in the ZIP
-    int num_files = zip_get_num_files(zip_file);
-    printf("Number of files in the ZIP: %d\n", num_files);
+    num_files = zip_get_num_files(zip); // pour tester si ça ouvrait bien , print le nombre de fichier
+    printf("number of files in zip: %d\n", num_files);
 
-    // Print the names of all files in the ZIP
-    for (int i = 0; i < num_files; i++) {
-        const char *file_name = zip_get_name(zip_file, i, 0);
-        printf("\033[1;31mFile %d: %s\033[0m\n", i + 1, file_name);   // Texte en rouge
-    }
-
-    // Close the ZIP file
-    zip_close(zip_file);
+    close_zip(zip);
 
     return 0;
 }
