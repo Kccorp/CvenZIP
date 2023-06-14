@@ -33,7 +33,7 @@ int main() {
     struct zip *zip;
     int num_files;
 
-    zip = open_zip("test.zip");
+    zip = open_zip("fs.zip");
 
     num_files = zip_get_num_files(zip); // pour tester si ça ouvrait bien , print le nombre de fichier
     printf("number of files in zip: %d\n", num_files);
