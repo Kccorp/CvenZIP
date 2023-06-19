@@ -12,10 +12,20 @@ void askDicBrutforce (char *pathToDic, int numberOfThreads){
 
 
 //    dicBrutforce(pathToDic);
-    threadsController(pathToDic, numberOfThreads);
+    threadsDicController(pathToDic, numberOfThreads);
 }
 
-void threadsController(char *pathToDic, int numberOfThreads){
+void askIterativeBrutforce (char *pathToZip, int numberOfThreads){
+//    printf("Saisir le chemin vers l'archive a extraire' : ");
+//    scanf("%s", pathToZip);
+//
+//    printf("Saisir le nombre de thread(s) a utiliser : ");
+//    scanf("%d", &numberOfThreads);
+
+    iterativeBrutforce(pathToZip);
+}
+
+void threadsDicController (char *pathToDic, int numberOfThreads){
 
     int totalline = getLineNumber(pathToDic);
     int startLine = 0;
@@ -50,7 +60,7 @@ void threadsController(char *pathToDic, int numberOfThreads){
     }
 }
 
-int getLineNumber(char *pathToDic){
+int getLineNumber (char *pathToDic){
     //get the number of line of file
     FILE *file = fopen(pathToDic, "r");
     if (file == NULL) {
@@ -96,4 +106,20 @@ void *dicBrutforce (void *arguments){
     fclose(file);
 
     return NULL;
+}
+
+void *iterativeBrutforce (void *arguments){
+    char numbers[] = "0123456789";
+
+    int length = strlen(numbers);
+
+    for(int i=0; i<length; i++){
+        workerBrutforce(numbers, length, numbers[i]);
+    }
+}
+
+void workerBrutforce (char *caracters, int length, char prefix){
+    for (int i = 0; i < length; ++i) {
+        printf("\n%c%c", prefix, caracters[i]);
+    }
 }

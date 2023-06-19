@@ -19,7 +19,10 @@ struct arg_struct {
 };
 
 void *dicBrutforce (void *pathToDic);
+void *iterativeBrutforce (void *pathToDic);
 void askDicBrutforce (char *pathToDic, int numberOfThreads);
-void threadsController(char *pathToDic, int numberOfThreads);
+void askIterativeBrutforce (char *pathToZip, int numberOfThreads);
+void threadsDicController(char *pathToDic, int numberOfThreads);
 int getLineNumber(char *pathToDic);
+void workerBrutforce (char *caracters, int length, char prefix);
 
