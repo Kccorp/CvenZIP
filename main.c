@@ -52,7 +52,7 @@ int main() {
     char filename[MAX_FILENAME_LENGTH];
     int threadsNumber;
 //    askDicBrutforce(filename, threadsNumber);
-    askIterativeBrutforce(filename, 56);
+    askIterativeBrutforce(filename, 1, 3);
 
 
 //    // Demande le nom du fichier à décompresser

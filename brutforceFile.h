@@ -12,17 +12,28 @@
 #include <string.h>
 #include <pthread.h>
 
-struct arg_struct {
+struct arg_struct_dic {
     char *pathToDic;
     int startLine;
     int endLine;
 };
 
-void *dicBrutforce (void *pathToDic);
-void *iterativeBrutforce (void *pathToDic);
+struct arg_struct_iter {
+    char *pathToDic;
+    int max;
+    int min;
+    char *chars;
+};
+
+void *dicBrutforce (void *parameters);
+void *iterativeBrutforce(char *chars, int min, int max, void *pathToDic);
+
 void askDicBrutforce (char *pathToDic, int numberOfThreads);
-void askIterativeBrutforce (char *pathToZip, int numberOfThreads);
+void askIterativeBrutforce (char *pathToZip, int numberOfThreads, int lengthPass);
+
 void threadsDicController(char *pathToDic, int numberOfThreads);
 int getLineNumber(char *pathToDic);
-void workerBrutforce (char *caracters, int length, char prefix);
+
+void workerBrutforce(char *current, int len, char *chars);
+
 
