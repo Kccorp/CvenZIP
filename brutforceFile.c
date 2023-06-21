@@ -4,23 +4,27 @@
 #include "brutforceFile.h"
 
 void askDicBrutforce (char *pathToDic, int numberOfThreads){
+//    ask for path to dic
     printf("Saisir le chemin vers le dictionnaire à utiliser : ");
     scanf("%s", pathToDic);
 
+//    ask for number of threads
     printf("Saisir le nombre de thread(s) a utiliser : ");
     scanf("%d", &numberOfThreads);
-
 
     threadsDicController(pathToDic, numberOfThreads);
 }
 
 void askIterativeBrutforce (char *pathToZip, int numberOfThreads, int lengthPass){
+//    ask for path to zip
     printf("Saisir le chemin vers l'archive a extraire : ");
     scanf("%s", pathToZip);
 
+//    ask for length of password
     printf("Saisir la longueur du mot de passe : ");
     scanf("%d", &lengthPass);
 
+//    ask for number of threads
     int cpt = 0;
     do {
         if (cpt > 0) {
@@ -89,14 +93,14 @@ void threadsDicController (char *pathToDic, int numberOfThreads){
     pthread_t *t=(pthread_t *)malloc(numberOfThreads * sizeof(pthread_t ));
 
 //    create threads
-    for(int i=0;i<numberOfThreads;i++){
+    for(int i=0;i<numberOfThreads;i++)
         pthread_create(&t[i],NULL,&dicBrutforce,(void *)&args[i]);
-    }
+
 
 //    wait for all threads to finish
-    for(int i=0;i<numberOfThreads;i++){
+    for(int i=0;i<numberOfThreads;i++)
         pthread_join(t[i],NULL);
-    }
+
 }
 
 void threadsIterController (char *pathToDic, int numberOfThreads, int lengthMax, char *chars){
@@ -110,7 +114,6 @@ void threadsIterController (char *pathToDic, int numberOfThreads, int lengthMax,
     for(int i=0; i<numberOfThreads; i++){
         args[i].pathToDic = pathToDic;
         args[i].chars = chars;
-
         args[i].min = min;
         args[i].max = min + maxPerThreads - 1;
 
@@ -120,16 +123,15 @@ void threadsIterController (char *pathToDic, int numberOfThreads, int lengthMax,
     //    create array of threads
     pthread_t *t=(pthread_t *)malloc(numberOfThreads * sizeof(pthread_t ));
 
-
 //    create threads
-    for(int i=0;i<numberOfThreads;i++){
+    for(int i=0;i<numberOfThreads;i++)
         pthread_create(&t[i],NULL,&iterativeBrutforce,(void *)&args[i]);
-    }
+
 
 //    wait for all threads to finish
-    for(int i=0;i<numberOfThreads;i++){
+    for(int i=0;i<numberOfThreads;i++)
         pthread_join(t[i],NULL);
-    }
+
 }
 
 int getLineNumber (char *pathToDic){
@@ -150,9 +152,6 @@ int getLineNumber (char *pathToDic){
 }
 
 void *dicBrutforce (void *arguments){
-
-
-
     //get the args
     struct arg_struct_dic *args = arguments;
 
@@ -185,7 +184,7 @@ void *dicBrutforce (void *arguments){
 
 void *iterativeBrutforce(void *parameters) {
 
-    printf("thread created\n");
+//    printf("thread created\n");    MESSAGE PRINTED WHEN THREAD IS CREATED (DEBUG)
 
     struct arg_struct_iter *args = parameters;
     int min = args->min;
