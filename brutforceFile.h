@@ -26,7 +26,7 @@ struct arg_struct_iter {
 };
 
 void *dicBrutforce (void *parameters);
-void *iterativeBrutforce(char *chars, int min, int max, void *pathToDic);
+void *iterativeBrutforce(void *parameters);
 
 void askDicBrutforce (char *pathToDic, int numberOfThreads);
 void askIterativeBrutforce (char *pathToZip, int numberOfThreads, int lengthPass);
@@ -34,6 +34,7 @@ void askIterativeBrutforce (char *pathToZip, int numberOfThreads, int lengthPass
 void threadsDicController(char *pathToDic, int numberOfThreads);
 int getLineNumber(char *pathToDic);
 
+void threadsIterController (char *pathToDic, int numberOfThreads, int lengthMax, char *chars);
 void workerBrutforce(char *current, int len, char *chars);
 
 

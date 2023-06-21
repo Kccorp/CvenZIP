@@ -15,17 +15,53 @@ void askDicBrutforce (char *pathToDic, int numberOfThreads){
 }
 
 void askIterativeBrutforce (char *pathToZip, int numberOfThreads, int lengthPass){
-//    printf("Saisir le chemin vers l'archive a extraire' : ");
-//    scanf("%s", pathToZip);
-//
-//    printf("Saisir le nombre de thread(s) a utiliser : ");
-//    scanf("%d", &numberOfThreads);
+    printf("Saisir le chemin vers l'archive a extraire : ");
+    scanf("%s", pathToZip);
 
-//    printf("Saisir la longueur du mot de passe : ");
-//    scanf("%d", &lengthPass);
+    printf("Saisir la longueur du mot de passe : ");
+    scanf("%d", &lengthPass);
 
-    char *numbers = "0123456789";
-    iterativeBrutforce(numbers, 1, 2, pathToZip);
+    int cpt = 0;
+    do {
+        if (cpt > 0) {
+            printf("Le nombre de thread(s) doit être inférieur ou égal à la longueur du mot de passe\n");
+        }
+        printf("Saisir le nombre de thread(s) a utiliser : ");
+        scanf("%d", &numberOfThreads);
+        cpt++;
+    } while (numberOfThreads > lengthPass);
+
+    //    switch case for choice of chars to use number, letter, special char
+    char *numbers = "0123";
+    char *letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    char *lettersAndNumbers = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    char *all = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+
+    int choice;
+    printf("Choisir le type de caractères à utiliser : \n");
+    printf("1. Chiffres seulement [%s]\n", numbers);
+    printf("2. Lettres seulement [%s]\n", letters);
+    printf("3. Lettres et chiffres [%s]\n", lettersAndNumbers);
+    printf("4. Lettres, chiffres et caractères spéciaux [%s]\n", all);
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            threadsIterController(pathToZip, numberOfThreads, lengthPass, numbers);
+            break;
+        case 2:
+            threadsIterController(pathToZip, numberOfThreads, lengthPass, letters);
+            break;
+        case 3:
+            threadsIterController(pathToZip, numberOfThreads, lengthPass, lettersAndNumbers);
+            break;
+        case 4:
+            threadsIterController(pathToZip, numberOfThreads, lengthPass, all);
+            break;
+        default:
+            printf("Choix invalide\n");
+            break;
+    }
 }
 
 void threadsDicController (char *pathToDic, int numberOfThreads){
@@ -63,20 +99,27 @@ void threadsDicController (char *pathToDic, int numberOfThreads){
     }
 }
 
-void threadsIterController (char *pathToDic, int numberOfThreads, int lengthPass){
+void threadsIterController (char *pathToDic, int numberOfThreads, int lengthMax, char *chars){
 
     struct arg_struct_iter args[numberOfThreads];
 
     //    create args/struct for threads
+    int maxPerThreads = lengthMax/numberOfThreads;
+    int min = 1;
+
     for(int i=0; i<numberOfThreads; i++){
         args[i].pathToDic = pathToDic;
-        args[i].max = lengthPass;
-        args[i].min = lengthPass;
-        args[i].chars = "0123456789";
+        args[i].chars = chars;
+
+        args[i].min = min;
+        args[i].max = min + maxPerThreads - 1;
+
+        min = min + maxPerThreads;
     }
 
     //    create array of threads
     pthread_t *t=(pthread_t *)malloc(numberOfThreads * sizeof(pthread_t ));
+
 
 //    create threads
     for(int i=0;i<numberOfThreads;i++){
@@ -108,6 +151,8 @@ int getLineNumber (char *pathToDic){
 
 void *dicBrutforce (void *arguments){
 
+
+
     //get the args
     struct arg_struct_dic *args = arguments;
 
@@ -138,7 +183,16 @@ void *dicBrutforce (void *arguments){
 }
 
 
-void *iterativeBrutforce(char *chars, int min, int max, void *arguments) {
+void *iterativeBrutforce(void *parameters) {
+
+    printf("thread created\n");
+
+    struct arg_struct_iter *args = parameters;
+    int min = args->min;
+    int max = args->max;
+    char *chars = args->chars;
+    char *pathToDic = args->pathToDic;
+
     int l;
     for (l = min; l <= max; ++l)
         workerBrutforce("", l, chars);
