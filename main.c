@@ -225,7 +225,10 @@ int main(int argc, char *argv[]) {
     for (int i = 1; i < argc; i++) {
         // Help
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
-            printf("Features :\n"
+            printf("Examples :\n"
+                   "        ./main -f monZip.zip -e -p password1234 => Extract zip file with the password 'password1234'\n"
+                   "        ./main -i monZip.zip path/local/file.txt path/in/zip/file.txt  => Add or overwrite file\n"
+                   "\nFeatures :\n"
                    "    - Utiliser avec des arguments \n"
                    "        --help, -h => affiche les aides\n"
                    "        --open, -o => ouvre le fichier\n"
