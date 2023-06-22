@@ -14,6 +14,38 @@ long generateRandomLong(long min, long max) {
     return min + (long)(rand() / (RAND_MAX / (max - min + 1) + 1));
 }
 
+
+int printZipFolder(char *filename){
+    // Ouvre le fichier zip
+    int error;
+    zip_t *zip = zip_open(filename, 0, &error);
+    if (zip == NULL) {
+        printf("Impossible d'ouvrir le fichier zip\n");
+        return 1;
+    }
+
+    // Obtient le nombre d'entrées dans le fichier zip
+    int num_entries = zip_get_num_entries(zip, 0);
+    printf("Nombre d'entrées dans le fichier zip : %d\n", num_entries);
+
+
+    for(int i=0; i<num_entries; i++)
+    {
+        /* on utilise la position "i" pour récupérer le nom des fichiers */
+        printf("%s\n", zip_get_name(zip, i, ZIP_FL_UNCHANGED));
+    }
+
+    // Ferme le fichier zip
+    zip_close(zip);
+
+    return 0;
+
+}
+
+
+
+
+
 void extractFile(struct zip *zip, char *filename) { //fonction qui va extraire un fichier du zip et le stocker dans le dossier courant
     struct zip_file *file;
     char buffer[100]; //buffer qui va contenir le contenu du fichier , a modifier pour que ça soit dynamique
@@ -257,6 +289,10 @@ int main(int argc, char *argv[]) {
             }else if (strcmp(argv[i], "-i") == 0 || strcmp(argv[i], "--include") == 0) {
 //                printf("-i DETECT\n");
                 Add_OverwriteFile(argv[i+1], argv[i+2], argv[i+3]);
+
+            }else if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--open") == 0) {
+//                printf("-o DETECT\n");
+                printZipFolder(argv[i+1]);
 
             }
         }
