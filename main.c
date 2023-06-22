@@ -128,8 +128,7 @@ int extractAll(char *filename, char *password, char *cleCheckPassword){
 int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char* pathFileOutput)
 {
 
-    /* Source de Troumad original : http://www.developpez.net/forums/d1012322/c-cpp/c/contribuez/faq-modifier-pathFileInput-zip/ */
-    /* modifié pour ajouter la gestion des erreurs et quelques fonctionnalités */
+    // modifié pour ajouter la gestion des erreurs et quelques fonctionnalités
 
     int visu = 0;
     struct zip * f_zip=NULL;
@@ -156,7 +155,6 @@ int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char
         printf("Le fichier %s n'existe pas dans %s\n", pathFileOutput, fileZip);
 
         // c'est là qu'on fixe le nom qu'aura le nouveau document dans le fichier zip
-//        if(zip_add(f_zip,pathFileInput,n_zip) == -1)
         if(zip_add(f_zip,pathFileOutput,n_zip) == -1)
         {
             printf("%s\n", zip_strerror(f_zip));
@@ -170,8 +168,8 @@ int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char
 
     }
     else{
-        /* modification d'un document dans le fichier zip : le fichier est déjà dedans */
-        /* notre document remplace le document qui se trouve à l'emplacement visu */
+        // modification d'un document dans le fichier zip : le fichier est déjà dedans
+        // notre document remplace le document qui se trouve à l'emplacement visu
         if(zip_replace(f_zip,visu,n_zip) == -1)
         {
             printf("%s\n", zip_strerror(f_zip));
