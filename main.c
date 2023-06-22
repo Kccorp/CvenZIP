@@ -125,10 +125,10 @@ int extractAll(char *filename, char *password, char *cleCheckPassword){
 
 
 
-int Add_OverwriteFile(const char* fichierZip, const char* fichier)
+int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char* pathFileOutput)
 {
 
-    /* Source de Troumad original : http://www.developpez.net/forums/d1012322/c-cpp/c/contribuez/faq-modifier-fichier-zip/ */
+    /* Source de Troumad original : http://www.developpez.net/forums/d1012322/c-cpp/c/contribuez/faq-modifier-pathFileInput-zip/ */
     /* modifié pour ajouter la gestion des erreurs et quelques fonctionnalités */
 
     int visu = 0;
@@ -136,26 +136,28 @@ int Add_OverwriteFile(const char* fichierZip, const char* fichier)
     struct zip_source * n_zip=NULL;
     int err = 0;
 
-    // ouverture du fichier zip
-    f_zip=zip_open(fichierZip,ZIP_CREATE,&err);
+    // Ouvre le fichier zip
+    int error;
+    f_zip= zip_open(fileZip, 0, &err);
     if (f_zip == NULL) {
         printf("Impossible d'ouvrir le fichier zip\n");
         return 1;
     }
 
     // on met dans le zip_source le fichier que l'on veut remplacer
-    if((n_zip=zip_source_file(f_zip,fichier, 0, 0)) == NULL) {
+    if((n_zip=zip_source_file(f_zip,pathFileInput, 0, 0)) == NULL) {
         printf("%s\n", zip_strerror(f_zip));
         return 1;
     }
 
     // recherche de l'emplacement du fichier dans le zip
-    visu=zip_name_locate(f_zip,fichier,0);
+    visu=zip_name_locate(f_zip,pathFileOutput,0);
     if (visu==-1){
-        printf("Le fichier %s n'existe pas dans %s\n", fichier, fichierZip);
+        printf("Le fichier %s n'existe pas dans %s\n", pathFileOutput, fileZip);
 
-         // c'est là qu'on fixe le nom qu'aura le nouveau document dans le fichier zip
-        if(zip_add(f_zip,fichier,n_zip) == -1)
+        // c'est là qu'on fixe le nom qu'aura le nouveau document dans le fichier zip
+//        if(zip_add(f_zip,pathFileInput,n_zip) == -1)
+        if(zip_add(f_zip,pathFileOutput,n_zip) == -1)
         {
             printf("%s\n", zip_strerror(f_zip));
             zip_close(f_zip);
@@ -164,7 +166,7 @@ int Add_OverwriteFile(const char* fichierZip, const char* fichier)
             n_zip = NULL;
             return 1;
         }
-        printf("Le fichier %s a été ajouté dans %s\n", fichier, fichierZip);
+        printf("Le fichier %s a été ajouté dans %s\n", pathFileOutput, fileZip);
 
     }
     else{
@@ -179,14 +181,9 @@ int Add_OverwriteFile(const char* fichierZip, const char* fichier)
             n_zip = NULL;
             return 1;
         }
-        printf("Le fichier %s a été remplacé dans %s\n", fichier, fichierZip);
-
+        printf("Le fichier %s a été remplacé dans %s\n", pathFileOutput, fileZip);
     }
 
-    zip_close(f_zip);
-    f_zip = NULL;
-    zip_source_free(n_zip);
-    n_zip = NULL;
 
     return 0;
 
@@ -258,7 +255,7 @@ int main(int argc, char *argv[]) {
                 extractAll(filename, password, cleCheckPassword);
             }else if (strcmp(argv[i], "-i") == 0 || strcmp(argv[i], "--include") == 0) {
 //                printf("-i DETECT\n");
-                Add_OverwriteFile(argv[i+1], argv[i+2]);
+                Add_OverwriteFile(argv[i+1], argv[i+2], argv[i+3]);
 
             }
         }
