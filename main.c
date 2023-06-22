@@ -3,12 +3,16 @@
 #include <string.h>
 #include <errno.h>
 #include <zip.h>
+#include <time.h>
 
 #define MAX_FILENAME_LENGTH 256
 #define MAX_PASSWORD_LENGTH 256
 
+long generateRandomLong(long min, long max) {
+    return min + (long)(rand() / (RAND_MAX / (max - min + 1) + 1));
+}
 
-void extract_file(struct zip *zip, char *filename) { //fonction qui va extraire un fichier du zip et le stocker dans le dossier courant
+void extractFile(struct zip *zip, char *filename) { //fonction qui va extraire un fichier du zip et le stocker dans le dossier courant
     struct zip_file *file;
     char buffer[100]; //buffer qui va contenir le contenu du fichier , a modifier pour que ça soit dynamique
     int len;
@@ -28,7 +32,7 @@ void extract_file(struct zip *zip, char *filename) { //fonction qui va extraire 
     }
 
     while ((len = zip_fread(file, buffer, sizeof(buffer))) > 0) { //tant qu'on peut lire dans le fichier zip
-        fwrite(buffer, 1, len, outfile); //on stocke da,s le fichier filename
+        fwrite(buffer, 1, len, outfile); //on stocke dans le fichier filename
     }
 
     if (len < 0) {
@@ -45,24 +49,20 @@ void extract_file(struct zip *zip, char *filename) { //fonction qui va extraire 
     printf("file '%s' extracted\n", filename);
 }
 
-int main() {
-    // Demande le nom du fichier à décompresser
-    char filename[MAX_FILENAME_LENGTH];
-    printf("Entrez le nom du fichier à décompresser : ");
-    fgets(filename, MAX_FILENAME_LENGTH, stdin);
-    filename[strcspn(filename, "\n")] = '\0';  // Supprime le caractère de nouvelle ligne
+int extractAll(char *filename, char *password, char *cleCheckPassword){
+//    printf("-------------extractAll-------------\n");
 
-    // Demande le mot de passe
-    char password[MAX_PASSWORD_LENGTH];
-    printf("Entrez le mot de passe du fichier (laissez vide s'il n'y en a pas) : ");
-    fgets(password, MAX_PASSWORD_LENGTH, stdin);
-    password[strcspn(password, "\n")] = '\0';  // Supprime le caractère de nouvelle ligne
+    // check password or not
+    if(strcmp(password, cleCheckPassword)==0){
+        strcpy(password, ""); // If password is cleCheckPassword(=default), set password to empty
+    }
+
 
     // Ouvre le fichier zip
     int error;
     zip_t *zip = zip_open(filename, 0, &error);
     if (zip == NULL) {
-        printf("Impossible d'ouvrir le fichier zip : %s\n", zip_strerror(error));
+        printf("Impossible d'ouvrir le fichier zip\n");
         return 1;
     }
 
@@ -86,7 +86,7 @@ int main() {
         // Ouvre le fichier dans le fichier zip
         zip_file_t *file = zip_fopen_index(zip, i, 0);
         if (file == NULL) {
-            printf("Impossible d'ouvrir le fichier dans le fichier zip : %s\n", zip_strerror(error));
+            printf("Impossible d'ouvrir le fichier dans le fichier zip\n.");
             zip_close(zip);
             return 1;
         }
@@ -99,7 +99,7 @@ int main() {
             zip_close(zip);
             return 1;
         }
-    char *filename = NULL;
+
         // Lit et écrit les données extraites
         zip_int64_t num_bytes;
         char buf[1024];
@@ -116,6 +116,80 @@ int main() {
     zip_close(zip);
 
     printf("Extraction terminée avec succès.\n");
+
+    return 0;
+
+}
+
+int main(int argc, char *argv[]) {
+    printf("==============START==============\n");
+    srand(time(NULL));  // Initialisation de la graine pour la génération aléatoire
+
+    char *password = malloc(sizeof(char) * MAX_PASSWORD_LENGTH);
+    char *filename = malloc(sizeof(char) * MAX_FILENAME_LENGTH);
+
+    // Init no password
+    long randomValue = generateRandomLong(1000000000, 2000000000);
+    // Conversion en chaîne de caractères
+    char cleCheckPassword[20];
+    sprintf(cleCheckPassword, "%ld", randomValue);
+//    printf("cleCheckPassword : %s\n", cleCheckPassword);
+    strcpy(password, cleCheckPassword);
+
+
+    // Get Password
+    for (int i = 1; i < argc; i++) {
+        // filename
+        if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--file") == 0) {
+            strcpy(filename, argv[i + 1]);
+//            printf("-f DETECT: '%s'\n", filename);
+        }
+
+        // password
+        if (strcmp(argv[i], "-p") == 0 || strcmp(argv[i], "--password") == 0) {
+            strcpy(password, argv[i + 1]);
+//            printf("-p DETECT: '%s'\n", password);
+        }
+    }
+
+    for (int i = 1; i < argc; i++) {
+        // Help
+        if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+            printf("Features :\n"
+                   "    - Utiliser avec des arguments \n"
+                   "        --help => affiche les aides\n"
+                   "        --open => ouvre le fichier\n"
+                   "        --bruteforce => bruteforce le fichier compressé\n"
+                   "        --dictionary => bruteforce avec un dictionnaire\n"
+                   "        --password => déverouille fichier en saisissant le mot de passe \n"
+                   "        --extract [arg1] [arg2] => extrait un fichier \n"
+                   "        --include [arg1] [arg2] => include un fichier \n"
+                   "        \n"
+                   "    - Ouvrir un fichier zip\n"
+                   "        - Sans mot de passe\n"
+                   "        - En saisissant un mot de passe\n"
+                   "    \n"
+                   "    - Bruteforce un fichier zip\n"
+                   "        - Brutforce par dictionnaire \n"
+                   "        - Brutforce par itération \n"
+                   "        \n"
+                   "    - Explorer le contenu du fichier unzip\n"
+                   "        - afficher le contenu (comme un ls)\n"
+                   "        - récupérer un fichier (dossier compressé > hôte)\n"
+                   "        - insérer un fichier (hôte > dossier compressé)");
+
+        } else {
+
+
+            //Extract all
+            if (strcmp(argv[i], "-e") == 0 || strcmp(argv[i], "--extract") == 0) {
+//                printf("-e DETECT\n");
+                extractAll(filename, password, cleCheckPassword);
+            }
+        }
+    }
+
+    printf("==============END==============\n");
 
     return 0;
 }
