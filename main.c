@@ -16,7 +16,7 @@ long generateRandomLong(long min, long max) {
 
 
 int printZipFolder(char *filename){
-    // Ouvre le fichier zip
+    // Open zip file
     int error;
     zip_t *zip = zip_open(filename, 0, &error);
     if (zip == NULL) {
@@ -24,18 +24,18 @@ int printZipFolder(char *filename){
         return 1;
     }
 
-    // Obtient le nombre d'entrées dans le fichier zip
+    // Get number of entries in zip file
     int num_entries = zip_get_num_entries(zip, 0);
     printf("Nombre d'entrées dans le fichier zip : %d\n", num_entries);
 
 
     for(int i=0; i<num_entries; i++)
     {
-        /* on utilise la position "i" pour récupérer le nom des fichiers */
+        // Use i to get the name of the file
         printf("%s\n", zip_get_name(zip, i, ZIP_FL_UNCHANGED));
     }
 
-    // Ferme le fichier zip
+    // Close zip file
     zip_close(zip);
 
     return 0;
@@ -92,7 +92,7 @@ int extractAll(char *filename, char *password, char *cleCheckPassword){
     }
 
 
-    // Ouvre le fichier zip
+    // Open zip file
     int error;
     zip_t *zip = zip_open(filename, 0, &error);
     if (zip == NULL) {
@@ -157,36 +157,33 @@ int extractAll(char *filename, char *password, char *cleCheckPassword){
 
 
 
-int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char* pathFileOutput)
-{
+int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char* pathFileOutput){
+    // fonction qui va remplacer un fichier dans un zip par un autre fichier ou en ajouter un si il n'existe pas
 
-    // modifié pour ajouter la gestion des erreurs et quelques fonctionnalités
-
-    int visu = 0;
+    int check = 0;
     struct zip * f_zip=NULL;
     struct zip_source * n_zip=NULL;
     int err = 0;
 
-    // Ouvre le fichier zip
-    int error;
+    // Open zip file
     f_zip= zip_open(fileZip, 0, &err);
     if (f_zip == NULL) {
         printf("Impossible d'ouvrir le fichier zip\n");
         return 1;
     }
 
-    // on met dans le zip_source le fichier que l'on veut remplacer
+    // stock the filename in the zip_source
     if((n_zip=zip_source_file(f_zip,pathFileInput, 0, 0)) == NULL) {
         printf("%s\n", zip_strerror(f_zip));
         return 1;
     }
 
-    // recherche de l'emplacement du fichier dans le zip
-    visu=zip_name_locate(f_zip,pathFileOutput,0);
-    if (visu==-1){
+    //search the file in the zip
+    check=zip_name_locate(f_zip,pathFileOutput,0);
+    if (check==-1){
         printf("Le fichier %s n'existe pas dans %s\n", pathFileOutput, fileZip);
 
-        // c'est là qu'on fixe le nom qu'aura le nouveau document dans le fichier zip
+        // add a document in the zip file if the file is not in it
         if(zip_add(f_zip,pathFileOutput,n_zip) == -1)
         {
             printf("%s\n", zip_strerror(f_zip));
@@ -200,10 +197,8 @@ int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char
 
     }
     else{
-        // modification d'un document dans le fichier zip : le fichier est déjà dedans
-        // notre document remplace le document qui se trouve à l'emplacement visu
-        if(zip_replace(f_zip,visu,n_zip) == -1)
-        {
+        // our document replaces the document located at the "check" location
+        if(zip_replace(f_zip,check,n_zip) == -1) {
             printf("%s\n", zip_strerror(f_zip));
             zip_close(f_zip);
             f_zip = NULL;
@@ -223,17 +218,17 @@ int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char
 
 int main(int argc, char *argv[]) {
     printf("==============START==============\n");
-    srand(time(NULL));  // Initialisation de la graine pour la génération aléatoire
+    srand(time(NULL)); // Init random
 
     char *password = malloc(sizeof(char) * MAX_PASSWORD_LENGTH);
     char *filename = malloc(sizeof(char) * MAX_FILENAME_LENGTH);
 
     // Init no password
     long randomValue = generateRandomLong(1000000000, 2000000000);
-    // Conversion en chaîne de caractères
+    // int to string
     char cleCheckPassword[20];
     sprintf(cleCheckPassword, "%ld", randomValue);
-//    printf("cleCheckPassword : %s\n", cleCheckPassword);
+        //printf("cleCheckPassword : %s\n", cleCheckPassword);
     strcpy(password, cleCheckPassword);
 
 
@@ -241,13 +236,13 @@ int main(int argc, char *argv[]) {
     for (int i = 1; i < argc; i++) {
         // filename
         if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--file") == 0) {
-            // printf("-f DETECT: '%s'\n", filename);
+                // printf("-f DETECT: '%s'\n", filename);
             strcpy(filename, argv[i + 1]);
         }
 
         // password
         if (strcmp(argv[i], "-p") == 0 || strcmp(argv[i], "--password") == 0) {
-            // printf("-p DETECT: '%s'\n", password);
+                // printf("-p DETECT: '%s'\n", password);
             strcpy(password, argv[i + 1]);
         }
     }
@@ -282,23 +277,21 @@ int main(int argc, char *argv[]) {
                    "        - insérer un fichier (hôte > dossier compressé)");
 
         } else {
-            //Extract all
+            // Extract all
             if (strcmp(argv[i], "-e") == 0 || strcmp(argv[i], "--extract") == 0) {
-//                printf("-e DETECT\n");
+                    // printf("-e DETECT\n");
                 extractAll(filename, password, cleCheckPassword);
             }else if (strcmp(argv[i], "-i") == 0 || strcmp(argv[i], "--include") == 0) {
-//                printf("-i DETECT\n");
+                    // printf("-i DETECT\n");
                 Add_OverwriteFile(argv[i+1], argv[i+2], argv[i+3]);
 
             }else if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--open") == 0) {
-//                printf("-o DETECT\n");
+                    // printf("-o DETECT\n");
                 printZipFolder(argv[i+1]);
 
             }
         }
     }
-
-
 
     printf("==============END==============\n");
 
