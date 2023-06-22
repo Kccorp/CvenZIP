@@ -8,6 +8,8 @@
 #define MAX_FILENAME_LENGTH 256
 #define MAX_PASSWORD_LENGTH 256
 
+
+
 long generateRandomLong(long min, long max) {
     return min + (long)(rand() / (RAND_MAX / (max - min + 1) + 1));
 }
@@ -121,6 +123,77 @@ int extractAll(char *filename, char *password, char *cleCheckPassword){
 
 }
 
+
+
+int Add_OverwriteFile(const char* fichierZip, const char* fichier)
+{
+
+    /* Source de Troumad original : http://www.developpez.net/forums/d1012322/c-cpp/c/contribuez/faq-modifier-fichier-zip/ */
+    /* modifié pour ajouter la gestion des erreurs et quelques fonctionnalités */
+
+    int visu = 0;
+    struct zip * f_zip=NULL;
+    struct zip_source * n_zip=NULL;
+    int err = 0;
+
+    // ouverture du fichier zip
+    f_zip=zip_open(fichierZip,ZIP_CREATE,&err);
+    if (f_zip == NULL) {
+        printf("Impossible d'ouvrir le fichier zip\n");
+        return 1;
+    }
+
+    // on met dans le zip_source le fichier que l'on veut remplacer
+    if((n_zip=zip_source_file(f_zip,fichier, 0, 0)) == NULL) {
+        printf("%s\n", zip_strerror(f_zip));
+        return 1;
+    }
+
+    // recherche de l'emplacement du fichier dans le zip
+    visu=zip_name_locate(f_zip,fichier,0);
+    if (visu==-1){
+        printf("Le fichier %s n'existe pas dans %s\n", fichier, fichierZip);
+
+         // c'est là qu'on fixe le nom qu'aura le nouveau document dans le fichier zip
+        if(zip_add(f_zip,fichier,n_zip) == -1)
+        {
+            printf("%s\n", zip_strerror(f_zip));
+            zip_close(f_zip);
+            f_zip = NULL;
+            zip_source_free(n_zip);
+            n_zip = NULL;
+            return 1;
+        }
+        printf("Le fichier %s a été ajouté dans %s\n", fichier, fichierZip);
+
+    }
+    else{
+        /* modification d'un document dans le fichier zip : le fichier est déjà dedans */
+        /* notre document remplace le document qui se trouve à l'emplacement visu */
+        if(zip_replace(f_zip,visu,n_zip) == -1)
+        {
+            printf("%s\n", zip_strerror(f_zip));
+            zip_close(f_zip);
+            f_zip = NULL;
+            zip_source_free(n_zip);
+            n_zip = NULL;
+            return 1;
+        }
+        printf("Le fichier %s a été remplacé dans %s\n", fichier, fichierZip);
+
+    }
+
+    zip_close(f_zip);
+    f_zip = NULL;
+    zip_source_free(n_zip);
+    n_zip = NULL;
+
+    return 0;
+
+}
+
+
+
 int main(int argc, char *argv[]) {
     printf("==============START==============\n");
     srand(time(NULL));  // Initialisation de la graine pour la génération aléatoire
@@ -141,14 +214,14 @@ int main(int argc, char *argv[]) {
     for (int i = 1; i < argc; i++) {
         // filename
         if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--file") == 0) {
+            // printf("-f DETECT: '%s'\n", filename);
             strcpy(filename, argv[i + 1]);
-//            printf("-f DETECT: '%s'\n", filename);
         }
 
         // password
         if (strcmp(argv[i], "-p") == 0 || strcmp(argv[i], "--password") == 0) {
+            // printf("-p DETECT: '%s'\n", password);
             strcpy(password, argv[i + 1]);
-//            printf("-p DETECT: '%s'\n", password);
         }
     }
 
@@ -157,13 +230,13 @@ int main(int argc, char *argv[]) {
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             printf("Features :\n"
                    "    - Utiliser avec des arguments \n"
-                   "        --help => affiche les aides\n"
-                   "        --open => ouvre le fichier\n"
-                   "        --bruteforce => bruteforce le fichier compressé\n"
-                   "        --dictionary => bruteforce avec un dictionnaire\n"
-                   "        --password => déverouille fichier en saisissant le mot de passe \n"
-                   "        --extract [arg1] [arg2] => extrait un fichier \n"
-                   "        --include [arg1] [arg2] => include un fichier \n"
+                   "        --help, -h => affiche les aides\n"
+                   "        --open, -o => ouvre le fichier\n"
+                   "        --bruteforce, -b => bruteforce le fichier compressé\n"
+                   "        --dictionary, -d => bruteforce avec un dictionnaire\n"
+                   "        --password, -p => déverouille fichier en saisissant le mot de passe \n"
+                   "        --extract [arg1] [arg2], -e [arg1] [arg2] => extrait un fichier \n"
+                   "        --include [dossier_destination.zip] [file_add.txt] , -i [arg1] [arg2] => include un fichier \n"
                    "        \n"
                    "    - Ouvrir un fichier zip\n"
                    "        - Sans mot de passe\n"
@@ -179,15 +252,19 @@ int main(int argc, char *argv[]) {
                    "        - insérer un fichier (hôte > dossier compressé)");
 
         } else {
-
-
             //Extract all
             if (strcmp(argv[i], "-e") == 0 || strcmp(argv[i], "--extract") == 0) {
 //                printf("-e DETECT\n");
                 extractAll(filename, password, cleCheckPassword);
+            }else if (strcmp(argv[i], "-i") == 0 || strcmp(argv[i], "--include") == 0) {
+//                printf("-i DETECT\n");
+                Add_OverwriteFile(argv[i+1], argv[i+2]);
+
             }
         }
     }
+
+
 
     printf("==============END==============\n");
 
