@@ -5,6 +5,8 @@
 #include <zip.h>
 #include <time.h>
 
+#include "brutforceFile.h"
+
 #define MAX_FILENAME_LENGTH 256
 #define MAX_PASSWORD_LENGTH 256
 
