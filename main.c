@@ -8,7 +8,9 @@
 #define MAX_FILENAME_LENGTH 256
 #define MAX_PASSWORD_LENGTH 256
 
-
+#define ANSI_COLOR_RED "\x1b[31m"
+#define ANSI_COLOR_YELLOW "\x1b[33m"
+#define ANSI_COLOR_RESET "\x1b[0m"
 
 long generateRandomLong(long min, long max) {
     return min + (long)(rand() / (RAND_MAX / (max - min + 1) + 1));
@@ -16,7 +18,7 @@ long generateRandomLong(long min, long max) {
 
 
 int printZipFolder(char *filename){
-    // Ouvre le fichier zip
+    // Open zip file
     int error;
     zip_t *zip = zip_open(filename, 0, &error);
     if (zip == NULL) {
@@ -24,18 +26,18 @@ int printZipFolder(char *filename){
         return 1;
     }
 
-    // Obtient le nombre d'entrées dans le fichier zip
+    // Get number of entries in zip file
     int num_entries = zip_get_num_entries(zip, 0);
     printf("Nombre d'entrées dans le fichier zip : %d\n", num_entries);
 
 
     for(int i=0; i<num_entries; i++)
     {
-        /* on utilise la position "i" pour récupérer le nom des fichiers */
+        // Use i to get the name of the file
         printf("%s\n", zip_get_name(zip, i, ZIP_FL_UNCHANGED));
     }
 
-    // Ferme le fichier zip
+    // Close zip file
     zip_close(zip);
 
     return 0;
@@ -92,7 +94,7 @@ int extractAll(char *filename, char *password, char *cleCheckPassword){
     }
 
 
-    // Ouvre le fichier zip
+    // Open zip file
     int error;
     zip_t *zip = zip_open(filename, 0, &error);
     if (zip == NULL) {
@@ -157,58 +159,53 @@ int extractAll(char *filename, char *password, char *cleCheckPassword){
 
 
 
-int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char* pathFileOutput)
-{
+int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char* pathFileOutput){
+    // fonction qui va remplacer un fichier dans un zip par un autre fichier ou en ajouter un si il n'existe pas
 
-    // modifié pour ajouter la gestion des erreurs et quelques fonctionnalités
-
-    int visu = 0;
+    int check = 0;
     struct zip * f_zip=NULL;
-    struct zip_source * n_zip=NULL;
+    struct zip_source * source_zip=NULL;
     int err = 0;
 
-    // Ouvre le fichier zip
-    int error;
+    // Open zip file
     f_zip= zip_open(fileZip, 0, &err);
     if (f_zip == NULL) {
         printf("Impossible d'ouvrir le fichier zip\n");
         return 1;
     }
 
-    // on met dans le zip_source le fichier que l'on veut remplacer
-    if((n_zip=zip_source_file(f_zip,pathFileInput, 0, 0)) == NULL) {
+    // stock the filename in the zip_source
+    if((source_zip=zip_source_file(f_zip,pathFileInput, 0, 0)) == NULL) {
         printf("%s\n", zip_strerror(f_zip));
         return 1;
     }
 
-    // recherche de l'emplacement du fichier dans le zip
-    visu=zip_name_locate(f_zip,pathFileOutput,0);
-    if (visu==-1){
+    //search the file in the zip
+    check=zip_name_locate(f_zip,pathFileOutput,0);
+    if (check==-1){
         printf("Le fichier %s n'existe pas dans %s\n", pathFileOutput, fileZip);
 
-        // c'est là qu'on fixe le nom qu'aura le nouveau document dans le fichier zip
-        if(zip_add(f_zip,pathFileOutput,n_zip) == -1)
+        // add a document in the zip file if the file is not in it
+        if(zip_add(f_zip,pathFileOutput,source_zip) == -1)
         {
             printf("%s\n", zip_strerror(f_zip));
             zip_close(f_zip);
             f_zip = NULL;
-            zip_source_free(n_zip);
-            n_zip = NULL;
+            zip_source_free(source_zip);
+            source_zip = NULL;
             return 1;
         }
         printf("Le fichier %s a été ajouté dans %s\n", pathFileOutput, fileZip);
 
     }
     else{
-        // modification d'un document dans le fichier zip : le fichier est déjà dedans
-        // notre document remplace le document qui se trouve à l'emplacement visu
-        if(zip_replace(f_zip,visu,n_zip) == -1)
-        {
+        // our document replaces the document located at the "check" location
+        if(zip_replace(f_zip,check,source_zip) == -1) {
             printf("%s\n", zip_strerror(f_zip));
             zip_close(f_zip);
             f_zip = NULL;
-            zip_source_free(n_zip);
-            n_zip = NULL;
+            zip_source_free(source_zip);
+            source_zip = NULL;
             return 1;
         }
         printf("Le fichier %s a été remplacé dans %s\n", pathFileOutput, fileZip);
@@ -223,17 +220,17 @@ int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char
 
 int main(int argc, char *argv[]) {
     printf("==============START==============\n");
-    srand(time(NULL));  // Initialisation de la graine pour la génération aléatoire
+    srand(time(NULL)); // Init random
 
     char *password = malloc(sizeof(char) * MAX_PASSWORD_LENGTH);
     char *filename = malloc(sizeof(char) * MAX_FILENAME_LENGTH);
 
     // Init no password
     long randomValue = generateRandomLong(1000000000, 2000000000);
-    // Conversion en chaîne de caractères
+    // int to string
     char cleCheckPassword[20];
     sprintf(cleCheckPassword, "%ld", randomValue);
-//    printf("cleCheckPassword : %s\n", cleCheckPassword);
+        //printf("cleCheckPassword : %s\n", cleCheckPassword);
     strcpy(password, cleCheckPassword);
 
 
@@ -241,13 +238,13 @@ int main(int argc, char *argv[]) {
     for (int i = 1; i < argc; i++) {
         // filename
         if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--file") == 0) {
-            // printf("-f DETECT: '%s'\n", filename);
+                // printf("-f DETECT: '%s'\n", filename);
             strcpy(filename, argv[i + 1]);
         }
 
         // password
         if (strcmp(argv[i], "-p") == 0 || strcmp(argv[i], "--password") == 0) {
-            // printf("-p DETECT: '%s'\n", password);
+                // printf("-p DETECT: '%s'\n", password);
             strcpy(password, argv[i + 1]);
         }
     }
@@ -255,50 +252,51 @@ int main(int argc, char *argv[]) {
     for (int i = 1; i < argc; i++) {
         // Help
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
-            printf("Examples :\n"
-                   "        ./main -f monZip.zip -e -p password1234 => Extract zip file with the password 'password1234'\n"
-                   "        ./main -i monZip.zip path/local/file.txt path/in/zip/file.txt  => Add or overwrite file\n"
-                   "\nFeatures :\n"
-                   "    - Utiliser avec des arguments \n"
-                   "        --help, -h => affiche les aides\n"
-                   "        --open, -o => ouvre le fichier\n"
-                   "        --bruteforce, -b => bruteforce le fichier compressé\n"
-                   "        --dictionary, -d => bruteforce avec un dictionnaire\n"
-                   "        --password, -p => déverouille fichier en saisissant le mot de passe \n"
-                   "        --extract [arg1] [arg2], -e [arg1] [arg2] => extrait un fichier \n"
-                   "        --include [dossier_destination.zip] [file_add.txt] , -i [arg1] [arg2] => include un fichier \n"
+            printf("DESCRIPTION\n"
+                   "    Manipulation de fichier compressé\n"
+                   "\n"
+                   ANSI_COLOR_RED"    -h"ANSI_COLOR_RESET","ANSI_COLOR_RED" --help\n"ANSI_COLOR_RESET
+                   "        Afficher l'aide\n"
                    "        \n"
-                   "    - Ouvrir un fichier zip\n"
-                   "        - Sans mot de passe\n"
-                   "        - En saisissant un mot de passe\n"
+                   ANSI_COLOR_RED"    -f"ANSI_COLOR_RESET","ANSI_COLOR_RED" --file " ANSI_COLOR_YELLOW "<filename.zip>\n"ANSI_COLOR_RESET
+                   "        Selectionner le fichier compressé\n"
                    "    \n"
-                   "    - Bruteforce un fichier zip\n"
-                   "        - Brutforce par dictionnaire \n"
-                   "        - Brutforce par itération \n"
+                   ANSI_COLOR_RED"    -p"ANSI_COLOR_RESET","ANSI_COLOR_RED" --password " ANSI_COLOR_YELLOW "<monMotDePasse>\n"ANSI_COLOR_RESET
+                   "        Mot de passe du fichier compressé\n"
                    "        \n"
-                   "    - Explorer le contenu du fichier unzip\n"
-                   "        - afficher le contenu (comme un ls)\n"
-                   "        - récupérer un fichier (dossier compressé > hôte)\n"
-                   "        - insérer un fichier (hôte > dossier compressé)");
+                   ANSI_COLOR_RED"    -o"ANSI_COLOR_RESET","ANSI_COLOR_RED" --open " ANSI_COLOR_YELLOW "<filename>\n"ANSI_COLOR_RESET
+                   "        Afficher le contenu d'un fichier compressé\n"
+                   "        Ex: -o -f \"filename.zip\"\n"
+                   "            -o -f \"filename.zip\"\n"
+                   "        \n"
+                   ANSI_COLOR_RED"    -i"ANSI_COLOR_RESET","ANSI_COLOR_RED" --include " ANSI_COLOR_YELLOW "<arg1> <arg2> <arg3>\n"ANSI_COLOR_RESET
+                   "        Ajouter un fichier dans un fichier compressé\n"
+                   "            * arg1 : chemin/fichier compressé de destination\n"
+                   "            * arg2 : chemin/fichier que l'on souhaite ajouter dans le fichier compressé\n"
+                   "            * arg3 : chemin/fichier où l'on souhaite enregistrer dans le fichier compressé\n"
+                   "            \n"
+                   ANSI_COLOR_RED"    -e"ANSI_COLOR_RESET","ANSI_COLOR_RED" --extract " ANSI_COLOR_YELLOW "<arg1> <arg2> <arg...>\n"ANSI_COLOR_RESET
+                   "        Extrait les fichiers passé en argument \n"
+                   "        Ex: -f \"couleur/rouge.txt\" \"couleur/bleu.txt\" \"couleur/vert.txt\"\n"
+                   "            -f \"filename.zip\" -p \"1234\" -e \"couleur/rouge.txt\" \"couleur/bleu.txt\" \"couleur/vert.txt\""
+                   "\n");
 
         } else {
-            //Extract all
+            // Extract all
             if (strcmp(argv[i], "-e") == 0 || strcmp(argv[i], "--extract") == 0) {
-//                printf("-e DETECT\n");
+                    // printf("-e DETECT\n");
                 extractAll(filename, password, cleCheckPassword);
             }else if (strcmp(argv[i], "-i") == 0 || strcmp(argv[i], "--include") == 0) {
-//                printf("-i DETECT\n");
+                    // printf("-i DETECT\n");
                 Add_OverwriteFile(argv[i+1], argv[i+2], argv[i+3]);
 
             }else if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--open") == 0) {
-//                printf("-o DETECT\n");
+                    // printf("-o DETECT\n");
                 printZipFolder(argv[i+1]);
 
             }
         }
     }
-
-
 
     printf("==============END==============\n");
 
