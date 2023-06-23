@@ -5,8 +5,6 @@
 #ifndef CVENZIP_BRUTFORCEFILE_H
 #define CVENZIP_BRUTFORCEFILE_H
 
-#endif //CVENZIP_BRUTFORCEFILE_H
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -36,5 +34,9 @@ int getLineNumber(char *pathToDic);
 
 void threadsIterController (char *pathToDic, int numberOfThreads, int lengthMax, char *chars);
 void workerBrutforce(char *current, int len, char *chars);
+
+
+#endif //CVENZIP_BRUTFORCEFILE_H
+
 
 
