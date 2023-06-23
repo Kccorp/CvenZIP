@@ -17,5 +17,6 @@ void extractFile(struct zip *zip, char *filename);
 int extractAll(char *filename, char *password, char *cleCheckPassword);
 int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char* pathFileOutput);
 void printHelp();
+int checkIfFileExist(char *path);
 
 #endif //CVENZIP_BASICTREATMENT_H

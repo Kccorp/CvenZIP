@@ -9,10 +9,6 @@
 #define MAX_FILENAME_LENGTH 256
 #define MAX_PASSWORD_LENGTH 256
 
-#define ANSI_COLOR_RED "\x1b[31m"
-#define ANSI_COLOR_YELLOW "\x1b[33m"
-#define ANSI_COLOR_RESET "\x1b[0m"
-
 
 
 int main(int argc, char *argv[]) {
@@ -29,6 +25,13 @@ int main(int argc, char *argv[]) {
     sprintf(cleCheckPassword, "%ld", randomValue);
     strcpy(password, cleCheckPassword);
 
+    //check if the user has entered a filename in 1st argument and a password in 2nd argument
+    if (checkIfFileExist(argv[1])) {
+        strcpy(filename, argv[1]);
+    } else {
+        printf("Please enter a filename\n");
+        exit(1);
+    }
     //for --args parsing (getopt) and their equibalent with -h
     struct option longopts[] = {
             {"help", no_argument, NULL, 'h'},
@@ -37,21 +40,26 @@ int main(int argc, char *argv[]) {
             {"output", required_argument, NULL, 'o'},
             {"file", required_argument, NULL, 'f'},
             {"password", required_argument, NULL, 'p'},
+            {"show", no_argument, NULL, 's'},
             {NULL, 0, NULL, 0}
     };
 
     int c;
     int index = 0;
-    while ((c = getopt_long(argc, argv, "hef:i:o:p:", longopts, &index)) != -1) {
+
+    while ((c = getopt_long(argc, argv, "hef:i:o:p:s", longopts, &index)) != -1) {
         switch (c) {
             case 'h':
                 printHelp();
                 break;
-            case 'e':
-                extractAll(filename, password, cleCheckPassword);
-                break;
             case 'f':
                 strcpy(filename, optarg);
+                break;
+            case 'p':
+                strcpy(password, optarg);
+                break;
+                case 'e':
+                extractAll(filename, password, cleCheckPassword);
                 break;
             case 'i':
                 Add_OverwriteFile(filename, optarg, optarg);
@@ -59,8 +67,8 @@ int main(int argc, char *argv[]) {
             case 'o':
                 Add_OverwriteFile(filename, optarg, optarg);
                 break;
-            case 'p':
-                strcpy(password, optarg);
+            case 's':
+                printZipFolder(filename);
                 break;
             default:
                 printf("Unknown option\n");
@@ -73,31 +81,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-"DESCRIPTION\n"
-"    Manipulation de fichier compressé\n"
-"\n"
-ANSI_COLOR_RED"    -h"ANSI_COLOR_RESET","ANSI_COLOR_RED" --help\n"ANSI_COLOR_RESET
-"        Afficher l'aide\n"
-"        \n"
-ANSI_COLOR_RED"    -f"ANSI_COLOR_RESET","ANSI_COLOR_RED" --file " ANSI_COLOR_YELLOW "<filename.zip>\n"ANSI_COLOR_RESET
-"        Selectionner le fichier compressé\n"
-"    \n"
-ANSI_COLOR_RED"    -p"ANSI_COLOR_RESET","ANSI_COLOR_RED" --password " ANSI_COLOR_YELLOW "<monMotDePasse>\n"ANSI_COLOR_RESET
-"        Mot de passe du fichier compressé\n"
-"        \n"
-ANSI_COLOR_RED"    -o"ANSI_COLOR_RESET","ANSI_COLOR_RED" --open " ANSI_COLOR_YELLOW "<filename>\n"ANSI_COLOR_RESET
-"        Afficher le contenu d'un fichier compressé\n"
-"        Ex: -o -f \"filename.zip\"\n"
-"            -o -f \"filename.zip\"\n"
-"        \n"
-ANSI_COLOR_RED"    -i"ANSI_COLOR_RESET","ANSI_COLOR_RED" --include " ANSI_COLOR_YELLOW "<arg1> <arg2> <arg3>\n"ANSI_COLOR_RESET
-"        Ajouter un fichier dans un fichier compressé\n"
-"            * arg1 : chemin/fichier compressé de destination\n"
-"            * arg2 : chemin/fichier que l'on souhaite ajouter dans le fichier compressé\n"
-"            * arg3 : chemin/fichier où l'on souhaite enregistrer dans le fichier compressé\n"
-"            \n"
-ANSI_COLOR_RED"    -e"ANSI_COLOR_RESET","ANSI_COLOR_RED" --extract " ANSI_COLOR_YELLOW "<arg1> <arg2> <arg...>\n"ANSI_COLOR_RESET
-"        Extrait les fichiers passé en argument \n"
-"        Ex: -f \"couleur/rouge.txt\" \"couleur/bleu.txt\" \"couleur/vert.txt\"\n"
-"            -f \"filename.zip\" -p \"1234\" -e \"couleur/rouge.txt\" \"couleur/bleu.txt\" \"couleur/vert.txt\""
-"\n");

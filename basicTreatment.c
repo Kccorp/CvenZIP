@@ -4,6 +4,12 @@
 
 #include "basicTreatment.h"
 
+
+#define ANSI_COLOR_RED "\x1b[31m"
+#define ANSI_COLOR_YELLOW "\x1b[33m"
+#define ANSI_COLOR_RESET "\x1b[0m"
+
+
 long generateRandomLong(long min, long max) {
     return min + (long)(rand() / (RAND_MAX / (max - min + 1) + 1));
 }
@@ -214,29 +220,41 @@ int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char
 }
 
 void printHelp(){
-printf("Examples :\n"
-"        ./main -f monZip.zip -e -p password1234 => Extract zip file with the password 'password1234'\n"
-"        ./main -i monZip.zip path/local/file.txt path/in/zip/file.txt  => Add or overwrite file\n"
-"\nFeatures :\n"
-"    - Utiliser avec des arguments \n"
-"        --help, -h => affiche les aides\n"
-"        --open, -o => ouvre le fichier\n"
-"        --bruteforce, -b => bruteforce le fichier compressé\n"
-"        --dictionary, -d => bruteforce avec un dictionnaire\n"
-"        --password, -p => déverouille fichier en saisissant le mot de passe \n"
-"        --extract [arg1] [arg2], -e [arg1] [arg2] => extrait un fichier \n"
-"        --include [dossier_destination.zip] [file_add.txt] , -i [arg1] [arg2] => include un fichier \n"
-"        \n"
-"    - Ouvrir un fichier zip\n"
-"        - Sans mot de passe\n"
-"        - En saisissant un mot de passe\n"
-"    \n"
-"    - Bruteforce un fichier zip\n"
-"        - Brutforce par dictionnaire \n"
-"        - Brutforce par itération \n"
-"        \n"
-"    - Explorer le contenu du fichier unzip\n"
-"        - afficher le contenu (comme un ls)\n"
-"        - récupérer un fichier (dossier compressé > hôte)\n"
-"        - insérer un fichier (hôte > dossier compressé)\n");
+printf("DESCRIPTION\n"
+       "    Manipulation de fichier compressé\n"
+       "\n"
+    ANSI_COLOR_RED"    -h"ANSI_COLOR_RESET","ANSI_COLOR_RED" --help\n"ANSI_COLOR_RESET
+    "        Afficher l'aide\n"
+    "        \n"
+    ANSI_COLOR_RED"    -f"ANSI_COLOR_RESET","ANSI_COLOR_RED" --file " ANSI_COLOR_YELLOW "<filename.zip>\n"ANSI_COLOR_RESET
+    "        Selectionner le fichier compressé\n"
+    "    \n"
+    ANSI_COLOR_RED"    -p"ANSI_COLOR_RESET","ANSI_COLOR_RED" --password " ANSI_COLOR_YELLOW "<monMotDePasse>\n"ANSI_COLOR_RESET
+    "        Mot de passe du fichier compressé\n"
+    "        \n"
+    ANSI_COLOR_RED"    -o"ANSI_COLOR_RESET","ANSI_COLOR_RED" --open " ANSI_COLOR_YELLOW "<filename>\n"ANSI_COLOR_RESET
+    "        Afficher le contenu d'un fichier compressé\n"
+    "        Ex: -o -f \"filename.zip\"\n"
+    "            -o -f \"filename.zip\"\n"
+    "        \n"
+    ANSI_COLOR_RED"    -i"ANSI_COLOR_RESET","ANSI_COLOR_RED" --include " ANSI_COLOR_YELLOW "<arg1> <arg2> <arg3>\n"ANSI_COLOR_RESET
+    "        Ajouter un fichier dans un fichier compressé\n"
+    "            * arg1 : chemin/fichier compressé de destination\n"
+    "            * arg2 : chemin/fichier que l'on souhaite ajouter dans le fichier compressé\n"
+    "            * arg3 : chemin/fichier où l'on souhaite enregistrer dans le fichier compressé\n"
+    "            \n"
+    ANSI_COLOR_RED"    -e"ANSI_COLOR_RESET","ANSI_COLOR_RED" --extract " ANSI_COLOR_YELLOW "<arg1> <arg2> <arg...>\n"ANSI_COLOR_RESET
+    "        Extrait les fichiers passé en argument \n"
+    "        Ex: -f \"couleur/rouge.txt\" \"couleur/bleu.txt\" \"couleur/vert.txt\"\n"
+    "            -f \"filename.zip\" -p \"1234\" -e \"couleur/rouge.txt\" \"couleur/bleu.txt\" \"couleur/vert.txt\""
+    "\n");
+}
+
+int checkIfFileExist(char *path){
+    FILE *file;
+    if ((file = fopen(path, "r"))){
+        fclose(file);
+        return 1;
+    }
+    return 0;
 }
