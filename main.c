@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <unistd.h>
+#include <getopt.h>
 #include "basicTreatment.h"
 #include "brutforceFile.h"
 
@@ -24,39 +24,41 @@ int main(int argc, char *argv[]) {
     sprintf(cleCheckPassword, "%ld", randomValue);
     strcpy(password, cleCheckPassword);
 
-    int option;
-    while ((option = getopt(argc, argv, "f:p:")) != -1) {
-        switch (option) {
-            case 'f':
-                strcpy(filename, optarg);
-                break;
-            case 'p':
-                strcpy(password, optarg);
-                break;
-            default:
-                break;
-        }
-    }
+    //for --args parsing (getopt) and their equibalent with -h
+    struct option longopts[] = {
+            {"help", no_argument, NULL, 'h'},
+            {"extract", no_argument, NULL, 'e'},
+            {"input", required_argument, NULL, 'i'},
+            {"output", required_argument, NULL, 'o'},
+            {"file", required_argument, NULL, 'f'},
+            {"password", required_argument, NULL, 'p'},
+            {NULL, 0, NULL, 0}
+    };
 
-
-    optind = 1;  // Reset getopt() for the second loop
-
-    while ((option = getopt(argc, argv, "hei:o:")) != -1) {
-        switch (option) {
+    int c;
+    int index = 0;
+    while ((c = getopt_long(argc, argv, "hef:i:o:p:", longopts, &index)) != -1) {
+        switch (c) {
             case 'h':
                 printHelp();
                 break;
             case 'e':
                 extractAll(filename, password, cleCheckPassword);
                 break;
+            case 'f':
+                strcpy(filename, optarg);
+                break;
             case 'i':
-                Add_OverwriteFile(argv[optind], argv[optind + 1], argv[optind + 2]);
+                Add_OverwriteFile(filename, optarg, optarg);
                 break;
             case 'o':
-                printZipFolder(argv[optind]);
+                Add_OverwriteFile(filename, optarg, optarg);
+                break;
+            case 'p':
+                strcpy(password, optarg);
                 break;
             default:
-                printHelp();
+                printf("Unknown option\n");
                 break;
         }
     }
