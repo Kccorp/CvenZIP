@@ -3,6 +3,6 @@ project(CvenZIP C)
 
 
 set(CMAKE_C_STANDARD 11)
-add_executable(CvenZIP main.c basictreatment.c brutforceFile.c brutforceFile.h basicTreatment.c basicTreatment.h)
+add_executable(CvenZIP main.c brutforceFile.c brutforceFile.h basicTreatment.c basicTreatment.h)
 
 target_link_libraries(CvenZIP libzip.so)
