@@ -29,7 +29,8 @@ int main(int argc, char *argv[]) {
     if (checkIfFileExist(argv[1])) {
         strcpy(filename, argv[1]);
     } else {
-        printf("Please enter a filename\n");
+        printf("Please enter a filename\n\n\n\n");
+        printHelp();
         exit(1);
     }
     //for --args parsing (getopt) and their equibalent with -h
@@ -38,7 +39,6 @@ int main(int argc, char *argv[]) {
             {"extract", no_argument, NULL, 'e'},
             {"input", required_argument, NULL, 'i'},
             {"output", required_argument, NULL, 'o'},
-            {"file", required_argument, NULL, 'f'},
             {"password", required_argument, NULL, 'p'},
             {"show", no_argument, NULL, 's'},
             {NULL, 0, NULL, 0}
@@ -47,15 +47,12 @@ int main(int argc, char *argv[]) {
     int c;
     int index = 0;
 
-    while ((c = getopt_long(argc, argv, "hef:i:o:p:s", longopts, &index)) != -1) {
+    while ((c = getopt_long(argc, argv, "hei:o:p:s", longopts, &index)) != -1) {
         switch (c) {
             case 'h':
                 printHelp();
                 break;
-            case 'f':
-                strcpy(filename, optarg);
-                break;
-            case 'p':
+                case 'p':
                 strcpy(password, optarg);
                 break;
                 case 'e':
