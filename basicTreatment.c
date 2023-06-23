@@ -213,4 +213,30 @@ int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char
 
 }
 
-
+void printHelp(){
+printf("Examples :\n"
+"        ./main -f monZip.zip -e -p password1234 => Extract zip file with the password 'password1234'\n"
+"        ./main -i monZip.zip path/local/file.txt path/in/zip/file.txt  => Add or overwrite file\n"
+"\nFeatures :\n"
+"    - Utiliser avec des arguments \n"
+"        --help, -h => affiche les aides\n"
+"        --open, -o => ouvre le fichier\n"
+"        --bruteforce, -b => bruteforce le fichier compressé\n"
+"        --dictionary, -d => bruteforce avec un dictionnaire\n"
+"        --password, -p => déverouille fichier en saisissant le mot de passe \n"
+"        --extract [arg1] [arg2], -e [arg1] [arg2] => extrait un fichier \n"
+"        --include [dossier_destination.zip] [file_add.txt] , -i [arg1] [arg2] => include un fichier \n"
+"        \n"
+"    - Ouvrir un fichier zip\n"
+"        - Sans mot de passe\n"
+"        - En saisissant un mot de passe\n"
+"    \n"
+"    - Bruteforce un fichier zip\n"
+"        - Brutforce par dictionnaire \n"
+"        - Brutforce par itération \n"
+"        \n"
+"    - Explorer le contenu du fichier unzip\n"
+"        - afficher le contenu (comme un ls)\n"
+"        - récupérer un fichier (dossier compressé > hôte)\n"
+"        - insérer un fichier (hôte > dossier compressé)\n");
+}
