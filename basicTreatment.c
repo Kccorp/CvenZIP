@@ -43,9 +43,6 @@ int printZipFolder(char *filename){
 }
 
 
-
-
-
 int extractFile(char *zipName, char *extractFile,char *password,char *cleCheckPassword) { //fonction qui va extraire un fichier du zip et le stocker dans le dossier courant
 
 // PASSWORD + OPEN ZIPNAME
@@ -74,34 +71,38 @@ int extractFile(char *zipName, char *extractFile,char *password,char *cleCheckPa
     int err;
 
     printf("extracting file '%s'...\n", extractFile);
-    file = zip_fopen(extractFile, extractFile, 0); //on ouvre le fichier zip et on le stocke dans la structure file
+
+
+    file = zip_fopen_encrypted(zip, extractFile, 0, password); // Utilisez zip_fopen_encrypted pour ouvrir un fichier zip protégé par mot de passe
     if (file == NULL) {
-        printf("can't open file '%s': %s\n", extractFile, zip_strerror(extractFile));
+        printf("Can't open file '%s': %s\n", extractFile, zip_strerror(zip));
         exit(1);
     }
 
-    FILE *outfile = fopen(extractFile, "w"); //on crée un fichier de nom filename
+
+    FILE *outfile = fopen(extractFile, "w");
     if (outfile == NULL) {
-        printf("can't open file '%s': %s\n", extractFile, strerror(errno));
+        printf("Can't open file '%s': %s\n", extractFile, strerror(errno));
         exit(1);
     }
 
-    while ((len = zip_fread(file, buffer, sizeof(buffer))) > 0) { //tant qu'on peut lire dans le fichier zip
+
+    while ((len = zip_fread(file, buffer, sizeof(buffer))) > 0) { //tant qu'on peut lire dans le fichier zipName
         fwrite(buffer, 1, len, outfile); //on stocke dans le fichier filename
     }
 
     if (len < 0) {
-        printf("can't read file '%s': %s\n", filename, zip_file_strerror(file));
+        printf("can't read file '%s': %s\n", extractFile, zip_file_strerror(file));
         exit(1);
     }
 
     if (zip_fclose(file) < 0) { //on ferme le fichier zip
-        printf("can't close file '%s': %s\n", filename, zip_file_strerror(file));
+        printf("can't close file '%s': %s\n", extractFile, zip_file_strerror(file));
         exit(1);
     }
 
     fclose(outfile); //on ferme le fichier filename
-    printf("file '%s' extracted\n", filename);
+    printf("file '%s' extracted\n", extractFile);
 }
 
 int extractAll(char *filename, char *password, char *cleCheckPassword){

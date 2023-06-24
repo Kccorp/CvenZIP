@@ -56,9 +56,8 @@ int main(int argc, char *argv[]) {
                 strcpy(password, optarg);
                 break;
                 case 'e':
-                extractAll(zipName, password, cleCheckPassword);
-                extractFile(zipName, extractFile, password, cleCheckPassword);
-//                extractFile(zipName)
+//                extractAll(zipName, password, cleCheckPassword);
+                extractFile(zipName, optarg, password, cleCheckPassword);
                 break;
             case 'i':
                 Add_OverwriteFile(zipName, optarg, optarg);
