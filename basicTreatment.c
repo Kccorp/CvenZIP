@@ -46,22 +46,43 @@ int printZipFolder(char *filename){
 
 
 
-void extractFile(struct zip *zip, char *filename) { //fonction qui va extraire un fichier du zip et le stocker dans le dossier courant
+int extractFile(char *zipName, char *extractFile,char *password,char *cleCheckPassword) { //fonction qui va extraire un fichier du zip et le stocker dans le dossier courant
+
+// PASSWORD + OPEN ZIPNAME
+    // check password or not
+    if(strcmp(password, cleCheckPassword)==0){
+        strcpy(password, ""); // If password is cleCheckPassword(=default), set password to empty
+    }
+    // Ouvre le fichier zip
+    int error;
+    zip_t *zip = zip_open(zipName, 0, &error);
+    if (zip == NULL) {
+        printf(" Impossible d'ouvrir le fichier zip\n");
+        return 1;
+    }
+    // Vérifie si un mot de passe est nécessaire
+    if (zip_set_default_password(zip, password) < 0) {
+        printf("Mot de passe incorrect ou nécessaire pour extraire le fichier.\n");
+        zip_close(zip);
+        return 1;
+    }
+
+// EXTRACT FILE
     struct zip_file *file;
     char buffer[100]; //buffer qui va contenir le contenu du fichier , a modifier pour que ça soit dynamique
     int len;
     int err;
 
-    printf("extracting file '%s'...\n", filename);
-    file = zip_fopen(zip, filename, 0); //on ouvre le fichier zip et on le stocke dans la structure file
+    printf("extracting file '%s'...\n", extractFile);
+    file = zip_fopen(extractFile, extractFile, 0); //on ouvre le fichier zip et on le stocke dans la structure file
     if (file == NULL) {
-        printf("can't open file '%s': %s\n", filename, zip_strerror(zip));
+        printf("can't open file '%s': %s\n", extractFile, zip_strerror(extractFile));
         exit(1);
     }
 
-    FILE *outfile = fopen(filename, "w"); //on crée un fichier de nom filename
+    FILE *outfile = fopen(extractFile, "w"); //on crée un fichier de nom filename
     if (outfile == NULL) {
-        printf("can't open file '%s': %s\n", filename, strerror(errno));
+        printf("can't open file '%s': %s\n", extractFile, strerror(errno));
         exit(1);
     }
 
@@ -90,13 +111,11 @@ int extractAll(char *filename, char *password, char *cleCheckPassword){
     if(strcmp(password, cleCheckPassword)==0){
         strcpy(password, ""); // If password is cleCheckPassword(=default), set password to empty
     }
-
-
     // Ouvre le fichier zip
     int error;
     zip_t *zip = zip_open(filename, 0, &error);
     if (zip == NULL) {
-        printf("Impossible d'ouvrir le fichier zip\n");
+        printf(" Impossible d'ouvrir le fichier zip\n");
         return 1;
     }
 

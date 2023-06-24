@@ -13,7 +13,7 @@
 
 long generateRandomLong(long min, long max);
 int printZipFolder(char *filename);
-void extractFile(struct zip *zip, char *filename);
+int extractFile(char *zipName, char *extractFile,char *password,char *cleCheckPassword);
 int extractAll(char *filename, char *password, char *cleCheckPassword);
 int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char* pathFileOutput);
 void printHelp();

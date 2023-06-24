@@ -6,7 +6,7 @@
 #include "basicTreatment.h"
 #include "brutforceFile.h"
 
-#define MAX_FILENAME_LENGTH 256
+#define MAX_ZIPNAME_LENGTH 256
 #define MAX_PASSWORD_LENGTH 256
 
 
@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     srand(time(NULL));  // Initialisation de la graine pour la génération aléatoire
 
     char *password = malloc(sizeof(char) * MAX_PASSWORD_LENGTH);
-    char *filename = malloc(sizeof(char) * MAX_FILENAME_LENGTH);
+    char *zipName = malloc(sizeof(char) * MAX_ZIPNAME_LENGTH);
 
     // Init no password
     long randomValue = generateRandomLong(1000000000, 2000000000);
@@ -25,11 +25,11 @@ int main(int argc, char *argv[]) {
     sprintf(cleCheckPassword, "%ld", randomValue);
     strcpy(password, cleCheckPassword);
 
-    //check if the user has entered a filename in 1st argument and a password in 2nd argument
+    //check if the user has entered a zipName in 1st argument and a password in 2nd argument
     if (checkIfFileExist(argv[1])) {
-        strcpy(filename, argv[1]);
+        strcpy(zipName, argv[1]);
     } else {
-        printf("Please enter a filename\n\n\n\n");
+        printf("Please enter a zipName\n\n\n\n");
         printHelp();
         exit(1);
     }
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
     int c;
     int index = 0;
 
-    while ((c = getopt_long(argc, argv, "hei:o:p:s", longopts, &index)) != -1) {
+    while ((c = getopt_long(argc, argv, "he:i:o:p:s", longopts, &index)) != -1) {
         switch (c) {
             case 'h':
                 printHelp();
@@ -56,16 +56,18 @@ int main(int argc, char *argv[]) {
                 strcpy(password, optarg);
                 break;
                 case 'e':
-                extractAll(filename, password, cleCheckPassword);
+                extractAll(zipName, password, cleCheckPassword);
+                extractFile(zipName, extractFile, password, cleCheckPassword);
+//                extractFile(zipName)
                 break;
             case 'i':
-                Add_OverwriteFile(filename, optarg, optarg);
+                Add_OverwriteFile(zipName, optarg, optarg);
                 break;
             case 'o':
-                Add_OverwriteFile(filename, optarg, optarg);
+                Add_OverwriteFile(zipName, optarg, optarg);
                 break;
             case 's':
-                printZipFolder(filename);
+                printZipFolder(zipName);
                 break;
             default:
                 printf("Unknown option\n");
@@ -74,7 +76,7 @@ int main(int argc, char *argv[]) {
     }
 
     free(password);
-    free(filename);
+    free(zipName);
 
     return 0;
 }
