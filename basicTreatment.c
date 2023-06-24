@@ -9,6 +9,8 @@
 #define ANSI_COLOR_YELLOW "\x1b[33m"
 #define ANSI_COLOR_RESET "\x1b[0m"
 
+#define WRONG_PASSWORD 6969
+
 
 long generateRandomLong(long min, long max) {
     return min + (long)(rand() / (RAND_MAX / (max - min + 1) + 1));
@@ -40,6 +42,30 @@ int printZipFolder(char *filename){
 
     return 0;
 
+}
+
+int checkPassword(char *zipName, char *extractFile,char *password){
+    // Ouvre le fichier zip
+    int error;
+    zip_t *zip = zip_open(zipName, 0, &error);
+    if (zip == NULL) {
+        printf(" Impossible d'ouvrir le fichier zip\n");
+        return 1;
+    }
+    // Vérifie si un mot de passe est nécessaire
+    if (zip_set_default_password(zip, password) < 0) {
+        printf("Mot de passe incorrect ou nécessaire pour extraire le fichier.\n");
+        zip_close(zip);
+        return 1;
+    }
+
+// EXTRACT FILE
+    struct zip_file *file;
+    file = zip_fopen_encrypted(zip, extractFile, 0, password); // Utilisez zip_fopen_encrypted pour ouvrir un fichier zip protégé par mot de passe
+    if (file == NULL) {
+        printf("Wrong password\n");
+        return WRONG_PASSWORD;
+    }
 }
 
 
@@ -75,15 +101,15 @@ int extractFile(char *zipName, char *extractFile,char *password,char *cleCheckPa
 
     file = zip_fopen_encrypted(zip, extractFile, 0, password); // Utilisez zip_fopen_encrypted pour ouvrir un fichier zip protégé par mot de passe
     if (file == NULL) {
-        printf("Can't open file '%s': %s\n", extractFile, zip_strerror(zip));
-        exit(1);
+        printf("1 - Can't open file '%s': %s\n", extractFile, zip_strerror(zip));
+        return WRONG_PASSWORD;
     }
 
 
     FILE *outfile = fopen(extractFile, "w");
     if (outfile == NULL) {
-        printf("Can't open file '%s': %s\n", extractFile, strerror(errno));
-        exit(1);
+        printf("2 - Can't open file '%s': %s\n", extractFile, strerror(errno));
+        return 1;
     }
 
 
@@ -93,12 +119,12 @@ int extractFile(char *zipName, char *extractFile,char *password,char *cleCheckPa
 
     if (len < 0) {
         printf("can't read file '%s': %s\n", extractFile, zip_file_strerror(file));
-        exit(1);
+        return 1;
     }
 
     if (zip_fclose(file) < 0) { //on ferme le fichier zip
         printf("can't close file '%s': %s\n", extractFile, zip_file_strerror(file));
-        exit(1);
+        return 1;
     }
 
     fclose(outfile); //on ferme le fichier filename
