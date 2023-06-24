@@ -56,7 +56,6 @@ int main(int argc, char *argv[]) {
                 strcpy(password, optarg);
                 break;
                 case 'e':
-//                extractAll(zipName, password, cleCheckPassword);
                 extractFile(zipName, optarg, password, cleCheckPassword);
                 break;
             case 'i':

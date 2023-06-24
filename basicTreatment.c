@@ -59,12 +59,15 @@ int checkPassword(char *zipName, char *extractFile,char *password){
         return 1;
     }
 
-// EXTRACT FILE
+// TEST EXTRACT FILE TO CHECK THE PASSWORD
     struct zip_file *file;
     file = zip_fopen_encrypted(zip, extractFile, 0, password); // Utilisez zip_fopen_encrypted pour ouvrir un fichier zip protégé par mot de passe
     if (file == NULL) {
         printf("Wrong password\n");
         return WRONG_PASSWORD;
+    }else{
+        printf("Good password\n");
+        return 0;
     }
 }
 
