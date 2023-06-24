@@ -90,7 +90,7 @@ int extractAllFiles(char *zipName,char *password,char *cleCheckPassword) {
     {
         strcpy(pathFile,zip_get_name(zip, i, ZIP_FL_UNCHANGED));
         printf("%s\n", pathFile);
-        extractFile(zipName,"coucou.txt",password,cleCheckPassword);
+        extractFile(zipName,pathFile,password,cleCheckPassword);
 
     }
 
