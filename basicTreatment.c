@@ -21,7 +21,7 @@ int printZipFolder(char *zipName){
     }
 
     // Obtient le nombre d'entrées dans le fichier zip
-    int num_entries = zip_get_num_entries(zip, 0);
+        int num_entries = zip_get_num_entries(zip, 0);
     printf("Nombre d'entrées dans le fichier zip : %d\n", num_entries);
 
 
@@ -78,6 +78,7 @@ int PasswordGestion(char *password){
 
 int isZipPasswordEncrypted(const char* filename,char *password, int flag)
 {
+    //Open the zip file
     int error;
     zip_t *zip = zip_open(filename, 0, &error);
     if (zip == NULL) {
@@ -117,7 +118,7 @@ int isZipPasswordEncrypted(const char* filename,char *password, int flag)
 int extractAllFiles(char *zipName,char *password) {
     // Ouvre le fichier zip
     int error;
-    char *pathFile;
+    char *pathFile = malloc(sizeof(char)*100);
     zip_t *zip = zip_open(zipName, 0, &error);
     if (zip == NULL) {
         printf("Impossible d'ouvrir le fichier zip\n");
@@ -130,7 +131,6 @@ int extractAllFiles(char *zipName,char *password) {
 
     for(int i=0; i<num_entries; i++)
     {
-        printf("for azeroth");
         strcpy(pathFile,zip_get_name(zip, i, ZIP_FL_UNCHANGED));
         printf("%s\n", pathFile);
         extractFile(zipName,pathFile,password);
@@ -168,15 +168,16 @@ int extractFile(char *zipName, char *extractFile,char *password) { //fonction qu
         struct zip_file *file;
         char buffer[100]; //buffer qui va contenir le contenu du fichier , a modifier pour que ça soit dynamique
         int len;
-        int err;
 
         printf("extracting file '%s'...\n", extractFile);
 
 
-        file = zip_fopen_encrypted(zip, extractFile, 0, password); // Utilisez zip_fopen_encrypted pour ouvrir un fichier zip protégé par mot de passe
+//        file = zip_fopen_encrypted(zip, extractFile, 0, password); // Utilisez zip_fopen_encrypted pour ouvrir un fichier zip protégé par mot de passe
+        file = zip_fopen_encrypted(zip, extractFile + strlen(zipName) + 1, 0, password);
+
         if (file == NULL) {
             printf("1 - Can't open file '%s': %s\n", extractFile, zip_strerror(zip));
-            return WRONG_PASSWORD;
+            return 1;
         }
 
 
@@ -203,6 +204,11 @@ int extractFile(char *zipName, char *extractFile,char *password) { //fonction qu
 
         fclose(outfile); //on ferme le fichier filename
         printf("file '%s' extracted\n", extractFile);
+
+        // Close the ZIP file
+        zip_close(zip);
+
+        return 0;
     }
 }
 
