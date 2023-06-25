@@ -21,4 +21,5 @@ void printHelp();
 int checkIfFileExist(char *path);
 int isZipPasswordEncrypted(const char* filename, char *password,int flag);
 int PasswordGestion(char *password);
-#endif CVENZIP_BASICTREATMENT_H
+
+#endif //CVENZIP_BASICTREATMENT_H
