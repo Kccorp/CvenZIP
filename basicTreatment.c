@@ -128,9 +128,9 @@ int extractAllFiles(char *zipName,char *password) {
     int num_entries = zip_get_num_entries(zip, 0);
     printf("Nombre d'entrées dans le fichier zip : %d\n", num_entries);
 
-
     for(int i=0; i<num_entries; i++)
     {
+        printf("for azeroth");
         strcpy(pathFile,zip_get_name(zip, i, ZIP_FL_UNCHANGED));
         printf("%s\n", pathFile);
         extractFile(zipName,pathFile,password);
@@ -205,78 +205,6 @@ int extractFile(char *zipName, char *extractFile,char *password) { //fonction qu
         printf("file '%s' extracted\n", extractFile);
     }
 }
-
-int extractAll(char *filename, char *password, char *cleCheckPassword){
-//    printf("-------------extractAll-------------\n");
-
-    // check password or not
-    if(strcmp(password, cleCheckPassword)==0){
-        strcpy(password, ""); // If password is cleCheckPassword(=default), set password to empty
-    }
-    // Ouvre le fichier zip
-    int error;
-    zip_t *zip = zip_open(filename, 0, &error);
-    if (zip == NULL) {
-        printf(" Impossible d'ouvrir le fichier zip\n");
-        return 1;
-    }
-
-    // Vérifie si un mot de passe est nécessaire
-    if (zip_set_default_password(zip, password) < 0) {
-        printf("Mot de passe incorrect ou nécessaire pour extraire le fichier.\n");
-        zip_close(zip);
-        return 1;
-    }
-
-    // Obtient le nombre d'entrées dans le fichier zip
-    int num_entries = zip_get_num_entries(zip, 0);
-    printf("Nombre d'entrées dans le fichier zip : %d\n", num_entries);
-
-    // Parcourt les entrées et extrait les fichiers
-    for (int i = 0; i < num_entries; i++) {
-        // Obtient l'information de l'entrée
-        const char *name = zip_get_name(zip, i, 0);
-        printf("Extraction de : %s\n", name);
-
-        // Ouvre le fichier dans le fichier zip
-        zip_file_t *file = zip_fopen_index(zip, i, 0);
-        if (file == NULL) {
-            printf("Impossible d'ouvrir le fichier dans le fichier zip\n.");
-            zip_close(zip);
-            return 1;
-        }
-
-        // Crée un fichier local pour écrire les données extraites
-        FILE *out_file = fopen(name, "wb");
-        if (out_file == NULL) {
-            printf("Impossible de créer le fichier local : %s\n", name);
-            zip_fclose(file);
-            zip_close(zip);
-            return 1;
-        }
-
-        // Lit et écrit les données extraites
-        zip_int64_t num_bytes;
-        char buf[1024];
-        while ((num_bytes = zip_fread(file, buf, sizeof(buf))) > 0) {
-            fwrite(buf, sizeof(char), num_bytes, out_file);
-        }
-
-        // Ferme le fichier local et le fichier dans le fichier zip
-        fclose(out_file);
-        zip_fclose(file);
-    }
-
-    // Ferme le fichier zip
-    zip_close(zip);
-
-    printf("Extraction terminée avec succès.\n");
-
-    return 0;
-
-}
-
-
 
 int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char * pathFileOutput)
 {

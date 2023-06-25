@@ -82,6 +82,8 @@ int main(int argc, char *argv[]) {
             case 's':
                 printZipFolder(zipName);
                 break;
+            case 'p':
+                break;
             default:
                 printf("Unknown option\n");
                 break;
