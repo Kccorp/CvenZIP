@@ -19,5 +19,5 @@ int checkPassword(char *zipName, char *extractFile,char *password);
 int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char* pathFileOutput);
 void printHelp();
 int checkIfFileExist(char *path);
-
+int isZipPasswordEncrypted(const char* filename, char *password);
 #endif //CVENZIP_BASICTREATMENT_H

@@ -44,31 +44,74 @@ int printZipFolder(char *zipName){
 
 }
 
-int checkPassword(char *zipName, char *extractFile,char *password){
-    // Ouvre le fichier zip
-    int error;
-    zip_t *zip = zip_open(zipName, 0, &error);
-    if (zip == NULL) {
-        printf(" Impossible d'ouvrir le fichier zip\n");
-        return 1;
+int PasswordGestion(char *password){
+    printf("a password is needed to extract the file\n"
+           "choose an option :\n"
+              "1) enter a password\n"
+                "2) bruteforce the password\n"
+                    "3) exit\n");
+    int choice;
+    scanf("%d",&choice);
+    switch (choice) {
+        case 1:
+            printf("enter the password: ");
+            scanf("%s",password);
+            break;
+        case 2:
+            printf("How do you want to bruteforce the password ?\n"
+                   "1) with a dictionary\n"
+                   "2) with a bruteforce\n");
+            int choice2;
+            scanf("%d",&choice2);
+            if (choice2 == 1){
+                //LAFUNCTIONBRUTEFORCE DICO;
+            }else if(choice2 == 2){
+                //AFUNCTIONBRUTEFORCE BRUTEFORCE;
+            }else{
+                printf("wrong choice\n");
+                PasswordGestion(password);
+            }
+        case 3:
+            return 0;
+        default:
+            printf("wrong choice\n");
+            return 0;
     }
-    // Vérifie si un mot de passe est nécessaire
-    if (zip_set_default_password(zip, password) < 0) {
-        printf("Mot de passe incorrect ou nécessaire pour extraire le fichier.\n");
-        zip_close(zip);
+    return EXIT_SUCCESS;
+
+}
+
+int isZipPasswordEncrypted(const char* filename,char *password)
+{
+    int error;
+    zip_t *zip = zip_open(filename, 0, &error);
+    if (zip == NULL) {
+        printf("Impossible d'ouvrir le fichier zip\n");
         return 1;
     }
 
-// TEST EXTRACT FILE TO CHECK THE PASSWORD
-    struct zip_file *file;
-    file = zip_fopen_encrypted(zip, extractFile, 0, password); // Utilisez zip_fopen_encrypted pour ouvrir un fichier zip protégé par mot de passe
-    if (file == NULL) {
-        printf("Wrong password\n");
-        return WRONG_PASSWORD;
+
+    if(password == NULL){
+        zip_file_t *file = zip_fopen_index(zip, 0, 0);
+        if (file == NULL) {
+            printf("passworrd\n");
+            PasswordGestion(password);
+            return 1;
+        }
     }else{
-        printf("Good password\n");
-        return 0;
+        zip_set_default_password(zip, password);
+        zip_file_t *file = zip_fopen_index(zip, 0, 0);
+        if (file == NULL) {
+            printf("badpasswordTEST\n");
+            PasswordGestion(password);
+            return 1;
+        }
+
     }
+    printf("no password\n");
+    zip_close(zip);
+
+    return 0;
 }
 
 int extractAllFiles(char *zipName,char *password,char *cleCheckPassword) {

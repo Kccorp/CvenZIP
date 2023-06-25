@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
     //for --args parsing (getopt) and their equibalent with -h
     struct option longopts[] = {
             {"help", no_argument, NULL, 'h'},
+            {"test", no_argument, NULL, 't'},
             {"extract", no_argument, NULL, 'e'},
             {"input", required_argument, NULL, 'i'},
             {"output", required_argument, NULL, 'o'},
@@ -43,12 +44,16 @@ int main(int argc, char *argv[]) {
             {"show", no_argument, NULL, 's'},
             {NULL, 0, NULL, 0}
     };
+    //test de password
+    password = "pas";
 
     int c;
     int index = 0;
-
-    while ((c = getopt_long(argc, argv, "he:i:o:p:s", longopts, &index)) != -1) {
+    while ((c = getopt_long(argc, argv, "he:i:o:p:st", longopts, &index)) != -1) {
         switch (c) {
+            case 't':
+                isZipPasswordEncrypted(zipName, password);
+                break;
             case 'h':
                 printHelp();
                 break;
