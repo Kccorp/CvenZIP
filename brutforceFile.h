@@ -36,6 +36,8 @@ int getLineNumber(char *pathToDic);
 void threadsIterController (char *pathToDic, int numberOfThreads, int lengthMax, char *chars);
 void workerBrutforce(char *current, int len, char *chars, char *fileToCrack);
 
+char* removeTrailingNull(char* str);
+
 
 #endif //CVENZIP_BRUTFORCEFILE_H
 

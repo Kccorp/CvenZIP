@@ -136,6 +136,10 @@ void threadsIterController (char *pathToDic, int numberOfThreads, int lengthMax,
     for(int i=0;i<numberOfThreads;i++)
         pthread_join(t[i],NULL);
 
+//    delete array of threads
+    free(t);
+
+
 }
 
 int getLineNumber (char *pathToDic){
@@ -178,7 +182,7 @@ void *dicBrutforce (void *arguments){
     FILE *file = fopen(path, "r");
     if (file == NULL){
         printf("cannot open dictionary file");
-        exit(1);
+        exit(EXIT_SUCCESS);
     }
 
 //  read file
@@ -189,7 +193,7 @@ void *dicBrutforce (void *arguments){
             removeTrailingNull(line);
             if (isZipPasswordEncrypted(fileToCrack, line, 1) == 0){
                 printf("\nLe mot de passe est : %s", line);
-                exit(0);
+                exit(EXIT_SUCCESS);
             }
         }
         i++;
@@ -219,7 +223,7 @@ void *iterativeBrutforce(void *parameters) {
 void workerBrutforce(char *current, int len, char *chars, char *fileToCrack) {
 
     if (strlen(current) == len){
-//        printf("%s\n", current);
+        printf("%s\n", current);
         if (isZipPasswordEncrypted(fileToCrack, current, 1) == 0){
             printf("\nLe mot de passe est : %s", current);
             exit(0);

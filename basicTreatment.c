@@ -50,8 +50,16 @@ int PasswordGestion(char *password,const char *zipFile){
     switch (choice) {
         case 1:
             printf("enter the password: ");
-            //faire gaffe au \0 a la fin
-//            JMPbackToFunction
+            scanf("%s",password);
+            removeTrailingNull(password);
+
+            if (isZipPasswordEncrypted(zipFile, password, 1) == 1) {
+                printf(ANSI_COLOR_RED "wrong password\n" ANSI_COLOR_RESET);
+                PasswordGestion(password, zipFile);
+            }
+
+            return 0;
+
             break;
         case 2:
             printf("How do you want to bruteforce the password ?\n"
