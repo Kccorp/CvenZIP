@@ -39,7 +39,7 @@ void askIterativeBrutforce (char *pathToZip){
     } while (numberOfThreads > lengthPass);
 
     //    switch case for choice of chars to use number, letter, special char
-    char *numbers = "1234";
+    char *numbers = "0123456789";
     char *letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     char *lettersAndNumbers = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     char *all = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
