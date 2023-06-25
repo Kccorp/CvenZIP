@@ -20,6 +20,6 @@ int Add_OverwriteFile(const char* fileZip, const char* pathFile, const char* out
 void printHelp();
 int checkIfFileExist(char *path);
 int isZipPasswordEncrypted(const char* filename, char *password,int flag);
-int PasswordGestion(char *password);
+int PasswordGestion(char *password, const char *zipFile);
 
 #endif //CVENZIP_BASICTREATMENT_H

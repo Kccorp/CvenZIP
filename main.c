@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
             case 'h':
                 printHelp();
                 break;
-                case 'e':
+            case 'e':
                 extractFile(zipName, optarg, password);
                 break;
             case 'i':

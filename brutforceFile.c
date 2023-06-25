@@ -2,9 +2,12 @@
 // Created by kbod on 19/06/23.
 //
 #include "brutforceFile.h"
+#include "basicTreatment.h"
 
-void askDicBrutforce (char *pathToDic, int numberOfThreads){
+void askDicBrutforce (const char *fileToCrack){
 //    ask for path to dic
+    char *pathToDic = malloc(sizeof(char) * 256);
+    int numberOfThreads;
     printf("Saisir le chemin vers le dictionnaire à utiliser : ");
     scanf("%s", pathToDic);
 
@@ -12,13 +15,13 @@ void askDicBrutforce (char *pathToDic, int numberOfThreads){
     printf("Saisir le nombre de thread(s) a utiliser : ");
     scanf("%d", &numberOfThreads);
 
-    threadsDicController(pathToDic, numberOfThreads);
+    threadsDicController(pathToDic, numberOfThreads, fileToCrack);
 }
 
-void askIterativeBrutforce (char *pathToZip, int numberOfThreads, int lengthPass){
-//    ask for path to zip
-    printf("Saisir le chemin vers l'archive a extraire : ");
-    scanf("%s", pathToZip);
+void askIterativeBrutforce (char *pathToZip){
+
+    int numberOfThreads;
+    int lengthPass;
 
 //    ask for length of password
     printf("Saisir la longueur du mot de passe : ");
@@ -36,7 +39,7 @@ void askIterativeBrutforce (char *pathToZip, int numberOfThreads, int lengthPass
     } while (numberOfThreads > lengthPass);
 
     //    switch case for choice of chars to use number, letter, special char
-    char *numbers = "0123";
+    char *numbers = "1234";
     char *letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     char *lettersAndNumbers = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     char *all = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
@@ -68,7 +71,7 @@ void askIterativeBrutforce (char *pathToZip, int numberOfThreads, int lengthPass
     }
 }
 
-void threadsDicController (char *pathToDic, int numberOfThreads){
+void threadsDicController (char *pathToDic, int numberOfThreads, const char *fileToCrack){
 
     int totalline = getLineNumber(pathToDic);
     int startLine = 0;
@@ -79,6 +82,7 @@ void threadsDicController (char *pathToDic, int numberOfThreads){
     for(int i=0; i<numberOfThreads; i++){
         args[i].pathToDic = pathToDic;
         args[i].startLine = startLine;
+        args[i].fileToCrack = fileToCrack;
 
         startLine = startLine + totalline/numberOfThreads;
 
@@ -151,6 +155,16 @@ int getLineNumber (char *pathToDic){
     return count;
 }
 
+char* removeTrailingNull(char* str) {
+    size_t len = strlen(str);
+
+    if (len > 0 && str[len - 1] == '\n') {
+        str[len - 1] = '\0';
+    }
+
+    return str;
+}
+
 void *dicBrutforce (void *arguments){
     //get the args
     struct arg_struct_dic *args = arguments;
@@ -158,6 +172,7 @@ void *dicBrutforce (void *arguments){
     char *path = args->pathToDic;
     int startLine = args->startLine;
     int endLine = args->endLine;
+    const char *fileToCrack = args->fileToCrack;
 
 //    open file
     FILE *file = fopen(path, "r");
@@ -171,7 +186,11 @@ void *dicBrutforce (void *arguments){
     int i = 0;
     while (fgets(line, sizeof(line), file)) {
         if (i >= startLine && i <= endLine){
-            printf("\nLecture de la ligne %d : %s", i, line);
+            removeTrailingNull(line);
+            if (isZipPasswordEncrypted(fileToCrack, line, 1) == 0){
+                printf("\nLe mot de passe est : %s", line);
+                exit(0);
+            }
         }
         i++;
     }
@@ -194,20 +213,25 @@ void *iterativeBrutforce(void *parameters) {
 
     int l;
     for (l = min; l <= max; ++l)
-        workerBrutforce("", l, chars);
+        workerBrutforce("", l, chars, pathToDic);
 }
 
-void workerBrutforce(char *current, int len, char *chars) {
+void workerBrutforce(char *current, int len, char *chars, char *fileToCrack) {
 
-    if (strlen(current) == len)
-        printf("%s\n", current);
+    if (strlen(current) == len){
+//        printf("%s\n", current);
+        if (isZipPasswordEncrypted(fileToCrack, current, 1) == 0){
+            printf("\nLe mot de passe est : %s", current);
+            exit(0);
+        }
+    }
 
     if (strlen(current) < len) {
         for (int i = 0; i < strlen(chars); ++i) {
             char newCurrent[100]; // Adjust the size as per your requirement
             strcpy(newCurrent, current);
             strncat(newCurrent, &chars[i], 1);
-            workerBrutforce(newCurrent, len, chars);
+            workerBrutforce(newCurrent, len, chars, fileToCrack);
         }
     }
 }

@@ -12,6 +12,7 @@
 
 struct arg_struct_dic {
     char *pathToDic;
+    const char *fileToCrack;
     int startLine;
     int endLine;
 };
@@ -26,14 +27,14 @@ struct arg_struct_iter {
 void *dicBrutforce (void *parameters);
 void *iterativeBrutforce(void *parameters);
 
-void askDicBrutforce (char *pathToDic, int numberOfThreads);
-void askIterativeBrutforce (char *pathToZip, int numberOfThreads, int lengthPass);
+void askDicBrutforce (const char *fileToCrack);
+void askIterativeBrutforce (char *pathToZip);
 
-void threadsDicController(char *pathToDic, int numberOfThreads);
+void threadsDicController(char *pathToDic, int numberOfThreads, const char *fileToCrack);
 int getLineNumber(char *pathToDic);
 
 void threadsIterController (char *pathToDic, int numberOfThreads, int lengthMax, char *chars);
-void workerBrutforce(char *current, int len, char *chars);
+void workerBrutforce(char *current, int len, char *chars, char *fileToCrack);
 
 
 #endif //CVENZIP_BRUTFORCEFILE_H

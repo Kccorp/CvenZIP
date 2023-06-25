@@ -3,6 +3,7 @@
 //
 
 #include "basicTreatment.h"
+#include "brutforceFile.h"
 
 
 #define ANSI_COLOR_RED "\x1b[31m"
@@ -38,7 +39,7 @@ int printZipFolder(char *zipName){
 
 }
 
-int PasswordGestion(char *password){
+int PasswordGestion(char *password,const char *zipFile){
     printf("a password is needed to extract the file\n"
            "choose an option :\n"
               "1) enter a password\n"
@@ -59,12 +60,12 @@ int PasswordGestion(char *password){
             int choice2;
             scanf("%d",&choice2);
             if (choice2 == 1){
-                //LAFUNCTIONBRUTEFORCE DICO;
+                askDicBrutforce (zipFile);
             }else if(choice2 == 2){
-                //AFUNCTIONBRUTEFORCE BRUTEFORCE;
+                askIterativeBrutforce(zipFile);
             }else{
                 printf("wrong choice\n");
-                PasswordGestion(password);
+                PasswordGestion(password, zipFile);
             }
         case 3:
             return 1;
@@ -91,8 +92,8 @@ int isZipPasswordEncrypted(const char* filename,char *password, int flag)
         if (file == NULL) {
             if (flag != 1) {
                 printf("passworrd\n");
+                PasswordGestion(password, filename);
             }
-            PasswordGestion(password);
             return 1;
         }
     }else {
@@ -101,11 +102,10 @@ int isZipPasswordEncrypted(const char* filename,char *password, int flag)
         if (file == NULL) {
             if (flag != 1) {
                 printf("badpasswordTEST\n");
+                PasswordGestion(password, filename);
             }
-            PasswordGestion(password);
             return 1;
         }
-        printf("bon password enculer\n");
         return 0;
     }
     printf("no password\n");
