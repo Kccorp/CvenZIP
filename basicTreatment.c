@@ -273,6 +273,8 @@ int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char
         printf("Le fichier %s a été remplacé dans %s\n", pathFileOutput, fileZip);
     }
 
+    // Ferme le fichier zip
+    zip_close(f_zip);
 
     return 0;
 
