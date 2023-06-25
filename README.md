@@ -6,3 +6,7 @@
 <b>Afficher les aides:</b>
 
 <code>./CvenZIP -h</code>
+
+<b>Utilisation basic:</b>
+
+<code>./CvenZIP MonZip.zip -MES ARGUMENTS</code>
