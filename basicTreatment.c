@@ -50,6 +50,8 @@ int PasswordGestion(char *password){
         case 1:
             printf("enter the password: ");
             scanf("%s",password);
+            //faire gaffe au \0 a la fin
+//            JMPbackToFunction
             break;
         case 2:
             printf("How do you want to bruteforce the password ?\n"
@@ -66,7 +68,7 @@ int PasswordGestion(char *password){
                 PasswordGestion(password);
             }
         case 3:
-            return 0;
+            return 1;
         default:
             printf("wrong choice\n");
             return 0;
@@ -138,6 +140,8 @@ int extractAllFiles(char *zipName,char *password) {
 }
 
 int extractFile(char *zipName, char *extractFile,char *password) { //fonction qui va extraire un fichier du zip et le stocker dans le dossier courant
+
+    isZipPasswordEncrypted(zipName,password);
     if (strcmp(extractFile,"all") == 0){
         extractAllFiles(zipName, password);
     }else{
@@ -274,8 +278,9 @@ int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char
 {
 
     // modifié pour ajouter la gestion des erreurs et quelques fonctionnalités
-    printf("pathFileInput : %s\n", pathFileInput);
-    printf("pathFileOutput : %s\n", pathFileOutput);
+//    printf("pathFileInput : %s\n", pathFileInput);
+//    printf("pathFileOutput : %s\n", pathFileOutput);
+
     int visu = 0;
     struct zip * f_zip=NULL;
     struct zip_source * n_zip=NULL;
