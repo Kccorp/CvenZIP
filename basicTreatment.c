@@ -42,9 +42,9 @@ int printZipFolder(char *zipName){
 int PasswordGestion(char *password,const char *zipFile){
     printf("a password is needed to extract the file\n"
            "choose an option :\n"
-              "1) enter a password\n"
-                "2) bruteforce the password\n"
-                    "3) exit\n");
+              "1) Enter a password\n"
+                "2) Bruteforce the password\n"
+                    "3) Exit\n");
     int choice;
     scanf("%d",&choice);
     switch (choice) {
@@ -81,8 +81,6 @@ int PasswordGestion(char *password,const char *zipFile){
             printf("wrong choice\n");
             return 0;
     }
-    return EXIT_SUCCESS;
-
 }
 
 int isZipPasswordEncrypted(const char* filename,char *password, int flag)
@@ -99,7 +97,7 @@ int isZipPasswordEncrypted(const char* filename,char *password, int flag)
         zip_file_t *file = zip_fopen_index(zip, 0, 0);
         if (file == NULL) {
             if (flag != 1) {
-                printf("passworrd\n");
+                printf("Password is required\n");
                 PasswordGestion(password, filename);
             }
             return 1;
@@ -109,16 +107,17 @@ int isZipPasswordEncrypted(const char* filename,char *password, int flag)
         zip_file_t *file = zip_fopen_index(zip, 0, 0);
         if (file == NULL) {
             if (flag != 1) {
-                printf("badpasswordTEST\n");
+                printf("Wrong password\n");
                 PasswordGestion(password, filename);
             }
             return 1;
         }
-        return 0;
-    }
-    printf("no password\n");
-    zip_close(zip);
 
+        return 0;
+
+    }
+
+    zip_close(zip);
     return 0;
 }
 
@@ -217,14 +216,10 @@ int extractFile(char *zipName, char *extractFile,char *password) { //fonction qu
 int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char * pathFileOutput)
 {
 
+    // Default output is input
     if (strcmp(pathFileOutput, "NULL") == 0) {
         strcpy(pathFileOutput, pathFileInput);
     }
-
-        // modifié pour ajouter la gestion des erreurs et quelques fonctionnalités
-    printf("fileZip : %s\n", fileZip);
-    printf("pathFileInput : %s\n", pathFileInput);
-    printf("pathFileOutput : %s\n", pathFileOutput);
 
 
     int visu = 0;
@@ -303,6 +298,10 @@ printf("DESCRIPTION\n"
     "        Ex: ./main dossier.zip -s \n"
     "            ./main dossier.zip --show\n"
     "        \n"
+   ANSI_COLOR_RED"    -o"ANSI_COLOR_RESET","ANSI_COLOR_RED" --output " ANSI_COLOR_YELLOW " <pathFile> \n"ANSI_COLOR_RESET
+   "         Chemin output\n"
+   "\n"
+
     ANSI_COLOR_RED"    -i"ANSI_COLOR_RESET","ANSI_COLOR_RED" --include " ANSI_COLOR_YELLOW " <arg1> "ANSI_COLOR_RED"-o "ANSI_COLOR_YELLOW"<arg2>\n"ANSI_COLOR_RESET
     "        Ajouter un fichier dans un fichier compressé\n"
     "            * arg1 : chemin/fichier que l'on souhaite ajouter dans le fichier compressé\n"
