@@ -11,12 +11,6 @@
 
 #define WRONG_PASSWORD 6969
 
-
-long generateRandomLong(long min, long max) {
-    return min + (long)(rand() / (RAND_MAX / (max - min + 1) + 1));
-}
-
-
 int printZipFolder(char *zipName){
     // Ouvre le fichier zip
     int error;
@@ -114,7 +108,7 @@ int isZipPasswordEncrypted(const char* filename,char *password)
     return 0;
 }
 
-int extractAllFiles(char *zipName,char *password,char *cleCheckPassword) {
+int extractAllFiles(char *zipName,char *password) {
     // Ouvre le fichier zip
     int error;
     char *pathFile;
@@ -133,7 +127,7 @@ int extractAllFiles(char *zipName,char *password,char *cleCheckPassword) {
     {
         strcpy(pathFile,zip_get_name(zip, i, ZIP_FL_UNCHANGED));
         printf("%s\n", pathFile);
-        extractFile(zipName,pathFile,password,cleCheckPassword);
+        extractFile(zipName,pathFile,password);
 
     }
 
@@ -143,16 +137,12 @@ int extractAllFiles(char *zipName,char *password,char *cleCheckPassword) {
     return 0;
 }
 
-int extractFile(char *zipName, char *extractFile,char *password,char *cleCheckPassword) { //fonction qui va extraire un fichier du zip et le stocker dans le dossier courant
+int extractFile(char *zipName, char *extractFile,char *password) { //fonction qui va extraire un fichier du zip et le stocker dans le dossier courant
     if (strcmp(extractFile,"all") == 0){
-        extractAllFiles(zipName, password, cleCheckPassword);
+        extractAllFiles(zipName, password);
     }else{
 
-    // PASSWORD + OPEN ZIPNAME
-        // check password or not
-        if(strcmp(password, cleCheckPassword)==0){
-            strcpy(password, ""); // If password is cleCheckPassword(=default), set password to empty
-        }
+
         // Ouvre le fichier zip
         int error;
         zip_t *zip = zip_open(zipName, 0, &error);
@@ -163,7 +153,6 @@ int extractFile(char *zipName, char *extractFile,char *password,char *cleCheckPa
         // Vérifie si un mot de passe est nécessaire
         if (zip_set_default_password(zip, password) < 0) {
             printf("Mot de passe incorrect ou nécessaire pour extraire le fichier.\n");
-            zip_close(zip);
             return 1;
         }
 
@@ -281,11 +270,12 @@ int extractAll(char *filename, char *password, char *cleCheckPassword){
 
 
 
-int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char* pathFileOutput)
+int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char * pathFileOutput)
 {
 
     // modifié pour ajouter la gestion des erreurs et quelques fonctionnalités
-
+    printf("pathFileInput : %s\n", pathFileInput);
+    printf("pathFileOutput : %s\n", pathFileOutput);
     int visu = 0;
     struct zip * f_zip=NULL;
     struct zip_source * n_zip=NULL;

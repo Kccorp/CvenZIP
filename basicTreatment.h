@@ -13,10 +13,10 @@
 
 long generateRandomLong(long min, long max);
 int printZipFolder(char *filename);
-int extractAllFiles(char *zipName,char *password,char *cleCheckPassword);
-int extractFile(char *zipName, char *extractFile,char *password,char *cleCheckPassword);
+int extractAllFiles(char *zipName,char *password);
+int extractFile(char *zipName, char *extractFile,char *password);
 int checkPassword(char *zipName, char *extractFile,char *password);
-int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char* pathFileOutput);
+int Add_OverwriteFile(const char* fileZip, const char* pathFile, const char* output);
 void printHelp();
 int checkIfFileExist(char *path);
 int isZipPasswordEncrypted(const char* filename, char *password);

@@ -13,17 +13,13 @@
 
 int main(int argc, char *argv[]) {
 
-//    srand(time(NULL));  // Initialisation de la graine pour la génération aléatoire
+
 
     char *password = malloc(sizeof(char) * MAX_PASSWORD_LENGTH);
+    password="";
     char *zipName = malloc(sizeof(char) * MAX_ZIPNAME_LENGTH);
 
-    // Init no password
-//    long randomValue = generateRandomLong(1000000000, 2000000000);
-//    // Conversion en chaîne de caractères
-//    char cleCheckPassword[20];
-//    sprintf(cleCheckPassword, "%ld", randomValue);
-//    strcpy(password, cleCheckPassword);
+
 
     //check if the user has entered a zipName in 1st argument and a password in 2nd argument
     if (checkIfFileExist(argv[1])) {
@@ -33,21 +29,35 @@ int main(int argc, char *argv[]) {
         printHelp();
         exit(1);
     }
+
+
     //for --args parsing (getopt) and their equibalent with -h
     struct option longopts[] = {
             {"help", no_argument, NULL, 'h'},
             {"test", no_argument, NULL, 't'},
             {"extract", no_argument, NULL, 'e'},
-            {"input", required_argument, NULL, 'i'},
+            {"include", required_argument, NULL, 'i'},
             {"output", required_argument, NULL, 'o'},
-            {"password", required_argument, NULL, 'p'},
+//            {"password", required_argument, NULL, 'p'},
             {"show", no_argument, NULL, 's'},
             {NULL, 0, NULL, 0}
     };
 
-    //first loop for check for
-    //test de password
-
+    //check if the user enter -o or -output and store the arg in outputName
+    char *outputName = malloc(sizeof(char) * MAX_ZIPNAME_LENGTH);
+    outputName="kiki";
+    //if -o or -output is used, store the arg in outputName
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "-output") == 0) {
+            if (i + 1 < argc) {
+                outputName = argv[i + 1];
+                break;
+            } else {
+                printf("Missing argument for -o or -output option.\n");
+                return 1;
+            }
+        }
+    }
     int c;
     int index = 0;
     while ((c = getopt_long(argc, argv, "he:i:o:p:st", longopts, &index)) != -1) {
@@ -62,14 +72,14 @@ int main(int argc, char *argv[]) {
                 strcpy(password, optarg);
                 break;
                 case 'e':
-                extractFile(zipName, optarg, password, cleCheckPassword);
+                extractFile(zipName, optarg, password);
                 break;
             case 'i':
-                Add_OverwriteFile(zipName, optarg, optarg);
+                Add_OverwriteFile(zipName, optarg, outputName);
                 break;
-            case 'o':
-                Add_OverwriteFile(zipName, optarg, optarg);
-                break;
+//            case 'o':
+//                Add_OverwriteFile(zipName, optarg, optarg);
+//                break;
             case 's':
                 printZipFolder(zipName);
                 break;
