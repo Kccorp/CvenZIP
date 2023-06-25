@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     while ((c = getopt_long(argc, argv, "he:i:st", longopts, &index)) != -1) {
         switch (c) {
             case 't':
-                isZipPasswordEncrypted(zipName, password);
+                isZipPasswordEncrypted(zipName, password,0);
                 break;
             case 'h':
                 printHelp();

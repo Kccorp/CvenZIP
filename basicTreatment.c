@@ -49,7 +49,6 @@ int PasswordGestion(char *password){
     switch (choice) {
         case 1:
             printf("enter the password: ");
-            scanf("%s",password);
             //faire gaffe au \0 a la fin
 //            JMPbackToFunction
             break;
@@ -77,7 +76,7 @@ int PasswordGestion(char *password){
 
 }
 
-int isZipPasswordEncrypted(const char* filename,char *password)
+int isZipPasswordEncrypted(const char* filename,char *password, int flag)
 {
     int error;
     zip_t *zip = zip_open(filename, 0, &error);
@@ -87,22 +86,27 @@ int isZipPasswordEncrypted(const char* filename,char *password)
     }
 
 
-    if(password == NULL){
+    if(strcmp(password,"")==0){
         zip_file_t *file = zip_fopen_index(zip, 0, 0);
         if (file == NULL) {
-            printf("passworrd\n");
+            if (flag != 1) {
+                printf("passworrd\n");
+            }
             PasswordGestion(password);
             return 1;
         }
-    }else{
+    }else {
         zip_set_default_password(zip, password);
         zip_file_t *file = zip_fopen_index(zip, 0, 0);
         if (file == NULL) {
-            printf("badpasswordTEST\n");
+            if (flag != 1) {
+                printf("badpasswordTEST\n");
+            }
             PasswordGestion(password);
             return 1;
         }
-
+        printf("bon password enculer\n");
+        return 0;
     }
     printf("no password\n");
     zip_close(zip);
@@ -141,7 +145,7 @@ int extractAllFiles(char *zipName,char *password) {
 
 int extractFile(char *zipName, char *extractFile,char *password) { //fonction qui va extraire un fichier du zip et le stocker dans le dossier courant
 
-    isZipPasswordEncrypted(zipName,password);
+    isZipPasswordEncrypted(zipName,password,0);
     if (strcmp(extractFile,"all") == 0){
         extractAllFiles(zipName, password);
     }else{
