@@ -218,8 +218,10 @@ int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char
 {
 
     // modifié pour ajouter la gestion des erreurs et quelques fonctionnalités
-//    printf("pathFileInput : %s\n", pathFileInput);
-//    printf("pathFileOutput : %s\n", pathFileOutput);
+    printf("fileZip : %s\n", fileZip);
+    printf("pathFileInput : %s\n", pathFileInput);
+    printf("pathFileOutput : %s\n", pathFileOutput);
+
 
     int visu = 0;
     struct zip * f_zip=NULL;
@@ -227,7 +229,6 @@ int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char
     int err = 0;
 
     // Ouvre le fichier zip
-    int error;
     f_zip= zip_open(fileZip, 0, &err);
     if (f_zip == NULL) {
         printf("Impossible d'ouvrir le fichier zip\n");
@@ -259,7 +260,6 @@ int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char
 
     }
     else{
-        // modification d'un document dans le fichier zip : le fichier est déjà dedans
         // notre document remplace le document qui se trouve à l'emplacement visu
         if(zip_replace(f_zip,visu,n_zip) == -1)
         {
@@ -285,27 +285,30 @@ printf("DESCRIPTION\n"
     ANSI_COLOR_RED"    -h"ANSI_COLOR_RESET","ANSI_COLOR_RED" --help\n"ANSI_COLOR_RESET
     "        Afficher l'aide\n"
     "        \n"
-    ANSI_COLOR_RED"    -f"ANSI_COLOR_RESET","ANSI_COLOR_RED" --file " ANSI_COLOR_YELLOW "<filename.zip>\n"ANSI_COLOR_RESET
-    "        Selectionner le fichier compressé\n"
+//    ANSI_COLOR_RED"    -f"ANSI_COLOR_RESET","ANSI_COLOR_RED" --file " ANSI_COLOR_YELLOW "<filename.zip>\n"ANSI_COLOR_RESET
+//    "        Selectionner le fichier compressé\n"
     "    \n"
     ANSI_COLOR_RED"    -p"ANSI_COLOR_RESET","ANSI_COLOR_RED" --password " ANSI_COLOR_YELLOW "<monMotDePasse>\n"ANSI_COLOR_RESET
     "        Mot de passe du fichier compressé\n"
+    "        Ex: ./main dossier.zip -e all -p monMotDePasse\n"
     "        \n"
-    ANSI_COLOR_RED"    -o"ANSI_COLOR_RESET","ANSI_COLOR_RED" --open " ANSI_COLOR_YELLOW "<filename>\n"ANSI_COLOR_RESET
+    ANSI_COLOR_RED"    -s"ANSI_COLOR_RESET","ANSI_COLOR_RED" --show \n"ANSI_COLOR_RESET
     "        Afficher le contenu d'un fichier compressé\n"
-    "        Ex: -o -f \"filename.zip\"\n"
-    "            -o -f \"filename.zip\"\n"
+    "        Ex: ./main dossier.zip -s \n"
+    "            ./main dossier.zip --show\n"
     "        \n"
-    ANSI_COLOR_RED"    -i"ANSI_COLOR_RESET","ANSI_COLOR_RED" --include " ANSI_COLOR_YELLOW "<arg1> <arg2> <arg3>\n"ANSI_COLOR_RESET
+    ANSI_COLOR_RED"    -i"ANSI_COLOR_RESET","ANSI_COLOR_RED" --include " ANSI_COLOR_YELLOW " <arg1> "ANSI_COLOR_RED"-o "ANSI_COLOR_YELLOW"<arg2>\n"ANSI_COLOR_RESET
     "        Ajouter un fichier dans un fichier compressé\n"
-    "            * arg1 : chemin/fichier compressé de destination\n"
-    "            * arg2 : chemin/fichier que l'on souhaite ajouter dans le fichier compressé\n"
-    "            * arg3 : chemin/fichier où l'on souhaite enregistrer dans le fichier compressé\n"
+    "            * arg1 : chemin/fichier que l'on souhaite ajouter dans le fichier compressé\n"
+    "            * arg2 : chemin/fichier où l'on souhaite enregistrer dans le fichier compressé\n"
+    "        Ex: ./main dossier.zip -i file.txt -o sousDossier/ici/file.txt\n"
     "            \n"
-    ANSI_COLOR_RED"    -e"ANSI_COLOR_RESET","ANSI_COLOR_RED" --extract " ANSI_COLOR_YELLOW "<arg1> <arg2> <arg...>\n"ANSI_COLOR_RESET
-    "        Extrait les fichiers passé en argument \n"
-    "        Ex: -f \"couleur/rouge.txt\" \"couleur/bleu.txt\" \"couleur/vert.txt\"\n"
-    "            -f \"filename.zip\" -p \"1234\" -e \"couleur/rouge.txt\" \"couleur/bleu.txt\" \"couleur/vert.txt\""
+    ANSI_COLOR_RED"    -e"ANSI_COLOR_RESET","ANSI_COLOR_RED" --extract " ANSI_COLOR_YELLOW "{<zipFile>,"ANSI_COLOR_RED"all"ANSI_COLOR_YELLOW"}\n"ANSI_COLOR_RESET
+    "        Extrait les fichiers passé en argument (all pour tout extraire) \n"
+    "        Ex: ./main dossier.zip -e file.txt\n"
+    "            ./main dossier.zip -e file.txt -p monMotDePasse\n"
+    "            ./main dossier.zip -e all\n"
+    "            ./main dossier.zip -e all -p monMotDePasse\n"
     "\n");
 }
 
