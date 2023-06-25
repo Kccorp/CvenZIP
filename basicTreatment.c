@@ -125,7 +125,7 @@ int isZipPasswordEncrypted(const char* filename,char *password, int flag)
 int extractAllFiles(char *zipName,char *password) {
     // Ouvre le fichier zip
     int error;
-    char *pathFile;
+    char *pathFile=NULL;
     zip_t *zip = zip_open(zipName, 0, &error);
     if (zip == NULL) {
         printf("Impossible d'ouvrir le fichier zip\n");
