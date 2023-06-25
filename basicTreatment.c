@@ -217,7 +217,11 @@ int extractFile(char *zipName, char *extractFile,char *password) { //fonction qu
 int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char * pathFileOutput)
 {
 
-    // modifié pour ajouter la gestion des erreurs et quelques fonctionnalités
+    if (strcmp(pathFileOutput, "NULL") == 0) {
+        strcpy(pathFileOutput, pathFileInput);
+    }
+
+        // modifié pour ajouter la gestion des erreurs et quelques fonctionnalités
     printf("fileZip : %s\n", fileZip);
     printf("pathFileInput : %s\n", pathFileInput);
     printf("pathFileOutput : %s\n", pathFileOutput);

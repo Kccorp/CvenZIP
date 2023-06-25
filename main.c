@@ -44,6 +44,7 @@ int main(int argc, char *argv[]) {
 
 
     char *outputName = malloc(sizeof(char) * MAX_ZIPNAME_LENGTH);
+    strcpy(outputName, "NULL");
 
     //Merge ces 2 trucs ?
     for (int i = 1; i < argc; i++) {
