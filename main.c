@@ -13,17 +13,17 @@
 
 int main(int argc, char *argv[]) {
 
-    srand(time(NULL));  // Initialisation de la graine pour la génération aléatoire
+//    srand(time(NULL));  // Initialisation de la graine pour la génération aléatoire
 
     char *password = malloc(sizeof(char) * MAX_PASSWORD_LENGTH);
     char *zipName = malloc(sizeof(char) * MAX_ZIPNAME_LENGTH);
 
     // Init no password
-    long randomValue = generateRandomLong(1000000000, 2000000000);
-    // Conversion en chaîne de caractères
-    char cleCheckPassword[20];
-    sprintf(cleCheckPassword, "%ld", randomValue);
-    strcpy(password, cleCheckPassword);
+//    long randomValue = generateRandomLong(1000000000, 2000000000);
+//    // Conversion en chaîne de caractères
+//    char cleCheckPassword[20];
+//    sprintf(cleCheckPassword, "%ld", randomValue);
+//    strcpy(password, cleCheckPassword);
 
     //check if the user has entered a zipName in 1st argument and a password in 2nd argument
     if (checkIfFileExist(argv[1])) {
@@ -44,8 +44,9 @@ int main(int argc, char *argv[]) {
             {"show", no_argument, NULL, 's'},
             {NULL, 0, NULL, 0}
     };
+
+    //first loop for check for
     //test de password
-    password = "pas";
 
     int c;
     int index = 0;
