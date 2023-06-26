@@ -6,5 +6,5 @@
 #define CVENZIP_MENU_H
 
 int menu(char *zipName, char *lastPath, char *newPath, int indice);
-
+int menuFile(char *fileName);
 #endif //CVENZIP_MENÜ_H
