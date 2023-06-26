@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
     while ((c = getopt_long(argc, argv, "he:i:st", longopts, &index)) != -1) {
         switch (c) {
             case 't':
-                menu(zipName);
+                menu(zipName, "toto", 2);
                 break;
             case 'h':
                 printHelp();
