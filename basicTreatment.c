@@ -40,7 +40,7 @@ int printZipFolder(char *zipName){
 
 }
 
-int PasswordGestion(char *password,const char *zipFile){
+int PasswordGestion(char *password,const char *zipName){
     printf("Un mot de passe est nécessaire pour extraire le fichier\n"
            "Choisissez une option :\n"
               "1) Saisir un mot de passe\n"
@@ -54,9 +54,9 @@ int PasswordGestion(char *password,const char *zipFile){
             scanf("%s",password);
             removeTrailingNull(password);
 
-            if (isZipPasswordEncrypted(zipFile, password, 1) == 1) {
+            if (isZipPasswordEncrypted(zipName, password, 1) == 1) {
                 printf(ANSI_COLOR_RED "Mauvais mot de passe\n" ANSI_COLOR_RESET);
-                PasswordGestion(password, zipFile);
+                PasswordGestion(password, zipName);
             }
             return 0;
         case 2:
@@ -66,12 +66,12 @@ int PasswordGestion(char *password,const char *zipFile){
             int choice2;
             scanf("%d",&choice2);
             if (choice2 == 1){
-                askDicBrutforce (zipFile);
+                askDicBrutforce (zipName);
             }else if(choice2 == 2){
-                askIterativeBrutforce(zipFile);
+                askIterativeBrutforce(zipName);
             }else{
                 printf("Verifiez votre saisis\n");
-                PasswordGestion(password, zipFile);
+                PasswordGestion(password, zipName);
             }
         case 3:
             return 1;
