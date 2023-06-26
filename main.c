@@ -4,6 +4,7 @@
 #include <getopt.h>
 #include "basicTreatment.h"
 #include "brutforceFile.h"
+#include "menu.h"
 #include <sys/stat.h>
 
 #define MAX_ZIPNAME_LENGTH 256
@@ -70,7 +71,7 @@ int main(int argc, char *argv[]) {
     while ((c = getopt_long(argc, argv, "he:i:st", longopts, &index)) != -1) {
         switch (c) {
             case 't':
-                isZipPasswordEncrypted(zipName, password,0);
+                menu(zipName);
                 break;
             case 'h':
                 printHelp();
