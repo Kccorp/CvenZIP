@@ -7,17 +7,17 @@
 #include <regex.h>
 
 
-int menu(char *zipName, char *path, int indice){
+int menu(char *zipName,char *lastPath, char *newPath, int indice){
 
-    printf("%s\n%s\n%d\n", zipName, path, indice);
+    printf("%s\n%s\n%d\n", zipName, newPath, indice);
 
     // Ouvre le fichier zip
     int error;
     const char delimiteur[] = "/";
     int line = 1;
     char list[255][100];
-    char *regex_pattern = malloc(sizeof(char)*strlen(path));
-    strcpy(regex_pattern, path);
+    char *regex_pattern = malloc(sizeof(char)*strlen(newPath));
+    strcpy(regex_pattern, newPath);
     regex_t regex;
 
     // Compilation de l'expression régulière
@@ -58,7 +58,7 @@ int menu(char *zipName, char *path, int indice){
         // Stock chaque ligne dans un tableau "list"
         if (localIndice == indice) {
             if (regexec(&regex, zip_get_name(zip, i, ZIP_FL_UNCHANGED), 0, NULL, 0) == 0) {
-                printf("La chaîne commence par \"toto\"\n");
+                printf("La chaîne commence par \"%s\"\n", newPath);
                 strcpy(list[line - 1], zip_get_name(zip, i, ZIP_FL_UNCHANGED));
                 line++;
 
@@ -66,8 +66,10 @@ int menu(char *zipName, char *path, int indice){
         }
     }
 
+    // Affiche le contenu du tableau
+    printf("0 - Retour\n");
     for (int i = 0; i < line-1; ++i) {
-        printf("%d - %s\n", i, list[i]);
+        printf("%d - %s\n", i+1, list[i]);
     }
     // Ferme le fichier zip
     zip_close(zip);
@@ -75,7 +77,10 @@ int menu(char *zipName, char *path, int indice){
     int number;
     printf("\nFaites un choix : \n");
     scanf("%d", &number);
-    menu(zipName, list[number-1], indice+1);
+    if (number== 0){
+        menu(zipName, lastPath, lastPath, indice-1);
+    }
+    menu(zipName, newPath,list[number-1], indice+1);
     return 0;
 
 
