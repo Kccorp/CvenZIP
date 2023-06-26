@@ -121,7 +121,7 @@ int isZipPasswordEncrypted(const char* filename,char *password, int flag)
 int extractAllFiles(char *zipName,char *password) {
     // Ouvre le fichier zip
     int error;
-    char *pathFile=NULL;
+    char *pathFile= malloc(sizeof(char)*255);
     zip_t *zip = zip_open(zipName, 0, &error);
     if (zip == NULL) {
         printf("Impossible d'ouvrir le fichier zip\n");
@@ -136,7 +136,7 @@ int extractAllFiles(char *zipName,char *password) {
     {
 //        printf("for azeroth");
         strcpy(pathFile,zip_get_name(zip, i, ZIP_FL_UNCHANGED));
-//        printf("%s\n", pathFile);
+        printf("%s\n", pathFile);
         extractFile(zipName,pathFile,password);
 
     }
