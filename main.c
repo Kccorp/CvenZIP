@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     if (checkIfFileExist(argv[1])) {
         strcpy(zipName, argv[1]);
     } else {
-        printf("Please enter a zipName\n\n\n\n");
+        printf("Veuillez saisir un fichier compressé\n\n\n\n");
         printHelp();
         exit(1);
     }
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
             case 'p':
                 break;
             default:
-                printf("Unknown option\n");
+                printf("Option inconnu\n");
                 break;
         }
     }

@@ -40,31 +40,28 @@ int printZipFolder(char *zipName){
 }
 
 int PasswordGestion(char *password,const char *zipFile){
-    printf("a password is needed to extract the file\n"
-           "choose an option :\n"
-              "1) Enter a password\n"
-                "2) Bruteforce the password\n"
+    printf("Un mot de passe est nécessaire pour extraire le fichier\n"
+           "Choisissez une option :\n"
+              "1) Saisir un mot de passe\n"
+                "2) Bruteforce le mot de passe\n"
                     "3) Exit\n");
     int choice;
     scanf("%d",&choice);
     switch (choice) {
         case 1:
-            printf("enter the password: ");
+            printf("Saisir le mot de passe : ");
             scanf("%s",password);
             removeTrailingNull(password);
 
             if (isZipPasswordEncrypted(zipFile, password, 1) == 1) {
-                printf(ANSI_COLOR_RED "wrong password\n" ANSI_COLOR_RESET);
+                printf(ANSI_COLOR_RED "Mauvais mot de passe\n" ANSI_COLOR_RESET);
                 PasswordGestion(password, zipFile);
             }
-
             return 0;
-
-            break;
         case 2:
-            printf("How do you want to bruteforce the password ?\n"
-                   "1) with a dictionary\n"
-                   "2) with a bruteforce\n");
+            printf("Comment voulez-vous bruteforcer le mot de passe ?\n"
+                   "1) Méthode : Dictionnaire \n"
+                   "2) Méthode : Itération\n");
             int choice2;
             scanf("%d",&choice2);
             if (choice2 == 1){
@@ -72,13 +69,13 @@ int PasswordGestion(char *password,const char *zipFile){
             }else if(choice2 == 2){
                 askIterativeBrutforce(zipFile);
             }else{
-                printf("wrong choice\n");
+                printf("Verifiez votre saisis\n");
                 PasswordGestion(password, zipFile);
             }
         case 3:
             return 1;
         default:
-            printf("wrong choice\n");
+            printf("Verifiez votre saisis\n");
             return 0;
     }
 }
@@ -97,7 +94,7 @@ int isZipPasswordEncrypted(const char* filename,char *password, int flag)
         zip_file_t *file = zip_fopen_index(zip, 0, 0);
         if (file == NULL) {
             if (flag != 1) {
-                printf("Password is required\n");
+                printf("Mot de passe nécessaire\n");
                 PasswordGestion(password, filename);
             }
             return 1;
@@ -107,7 +104,7 @@ int isZipPasswordEncrypted(const char* filename,char *password, int flag)
         zip_file_t *file = zip_fopen_index(zip, 0, 0);
         if (file == NULL) {
             if (flag != 1) {
-                printf("Wrong password\n");
+                printf("Mauvais mot de passe\n");
                 PasswordGestion(password, filename);
             }
             return 1;
@@ -137,9 +134,9 @@ int extractAllFiles(char *zipName,char *password) {
 
     for(int i=0; i<num_entries; i++)
     {
-        printf("for azeroth");
+//        printf("for azeroth");
         strcpy(pathFile,zip_get_name(zip, i, ZIP_FL_UNCHANGED));
-        printf("%s\n", pathFile);
+//        printf("%s\n", pathFile);
         extractFile(zipName,pathFile,password);
 
     }
@@ -177,19 +174,19 @@ int extractFile(char *zipName, char *extractFile,char *password) { //fonction qu
         int len;
         int err;
 
-        printf("extracting file '%s'...\n", extractFile);
+        printf("Extraction en cours de '%s'...\n", extractFile);
 
 
         file = zip_fopen_encrypted(zip, extractFile, 0, password); // Utilisez zip_fopen_encrypted pour ouvrir un fichier zip protégé par mot de passe
         if (file == NULL) {
-            printf("1 - Can't open file '%s': %s\n", extractFile, zip_strerror(zip));
+            printf("1 - Impossible d'ouvrir le fichier '%s': %s\n", extractFile, zip_strerror(zip));
             return WRONG_PASSWORD;
         }
 
 
         FILE *outfile = fopen(extractFile, "w");
         if (outfile == NULL) {
-            printf("2 - Can't open file '%s': %s\n", extractFile, strerror(errno));
+            printf("2 - Impossible d'ouvrir le fichier '%s': %s\n", extractFile, strerror(errno));
             return 1;
         }
 
@@ -199,17 +196,17 @@ int extractFile(char *zipName, char *extractFile,char *password) { //fonction qu
         }
 
         if (len < 0) {
-            printf("can't read file '%s': %s\n", extractFile, zip_file_strerror(file));
+            printf("1 - Impossible de lire le fichier '%s': %s\n", extractFile, zip_file_strerror(file));
             return 1;
         }
 
         if (zip_fclose(file) < 0) { //on ferme le fichier zip
-            printf("can't close file '%s': %s\n", extractFile, zip_file_strerror(file));
+            printf("2 - Impossible de lire le fichier'%s': %s\n", extractFile, zip_file_strerror(file));
             return 1;
         }
 
         fclose(outfile); //on ferme le fichier filename
-        printf("file '%s' extracted\n", extractFile);
+        printf("Fichier '%s' extrait\n", extractFile);
     }
 }
 
