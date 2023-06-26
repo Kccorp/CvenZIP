@@ -4,6 +4,7 @@
 #include <getopt.h>
 #include "basicTreatment.h"
 #include "brutforceFile.h"
+#include <sys/stat.h>
 
 #define MAX_ZIPNAME_LENGTH 256
 #define MAX_PASSWORD_LENGTH 256
@@ -11,7 +12,7 @@
 
 
 int main(int argc, char *argv[]) {
-
+    // Créer le dossier
 
 
     char *password = malloc(sizeof(char) * MAX_PASSWORD_LENGTH);

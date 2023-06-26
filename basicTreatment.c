@@ -9,6 +9,7 @@
 #define ANSI_COLOR_RED "\x1b[31m"
 #define ANSI_COLOR_YELLOW "\x1b[33m"
 #define ANSI_COLOR_RESET "\x1b[0m"
+#include <sys/stat.h>
 
 #define WRONG_PASSWORD 6969
 
@@ -134,10 +135,21 @@ int extractAllFiles(char *zipName,char *password) {
 
     for(int i=0; i<num_entries; i++)
     {
-//        printf("for azeroth");
         strcpy(pathFile,zip_get_name(zip, i, ZIP_FL_UNCHANGED));
         printf("%s\n", pathFile);
-        extractFile(zipName,pathFile,password);
+
+        if (strlen(pathFile) > 0 && pathFile[strlen(pathFile) - 1] == '/') {
+            int result = mkdir(pathFile, 0777);
+
+            if (result == 0) {
+                printf("Le dossier %s a été créé.\n", pathFile);
+            } else {
+                printf("Impossible de créer le dossier %s.\n", pathFile);
+            }
+        } else {
+            extractFile (zipName,pathFile,password);
+            return 0;  // La chaîne ne se termine pas par "/"
+        }
 
     }
 
