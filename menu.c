@@ -6,29 +6,35 @@
 #include "basicTreatment.h"
 #include <regex.h>
 
+void clear(){
+    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+}
 
 int menu(char *zipName,char *lastPath, char *newPath, int indice, int flag){
-
+    char *inputFile = malloc(sizeof(char) * 100);
+    char *outputFile = malloc(sizeof(char) * 100);
     int longueur = strlen(newPath);
 
     if (newPath[longueur - 1] != '/') {
         menuFile(zipName, newPath);
     } else {
-        printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 
-
+        clear();
         switch (flag) {
             case 1:
-                printf("Extraction reussi : %s\n\n", lastPath);
+                printf("Extraction réussi : %s\n\n", lastPath);
                 break;
-            case 2:
+            case -1:
                 printf("ECHEC de l'extraction  : %s\n\n", lastPath);
                 break;
-            case 3:
-                printf("Remplacement reussi : %s\n\n", lastPath);
+            case 2:
+                printf("Remplacement réussi : %s\n\n", lastPath);
                 break;
-            case 4:
+            case -2:
                 printf("ECHEC du remplacement: %s\n\n", lastPath);
+                break;
+            case 3:
+                printf("Insertion du fichier réussi\n\n");
                 break;
             default:
                 break;
@@ -93,7 +99,7 @@ int menu(char *zipName,char *lastPath, char *newPath, int indice, int flag){
 
 // AFFICHAGE DU MENU ===========================================================
         // Affiche le contenu du tableau
-        printf("i - inclure un fichier \n");
+        printf("-1 - inclure un fichier \n");
         printf("0 - HOME\n");
         for (int i = 0; i < line - 1; ++i) {
             printf("%d - %s\n", i + 1, list[i]);
@@ -106,15 +112,28 @@ int menu(char *zipName,char *lastPath, char *newPath, int indice, int flag){
         scanf("%d", &choice);
 
         switch (choice) {
-            case 'i':
-                printf("Entrez le chemin du fichier a inclure : \n");
-                char *inputFile = malloc(sizeof(char) * 100);
+            case -1:
+                if (strcmp(newPath, "/") == 0) {
+                    strcpy(outputFile, "");
+                } else {
+                    strcpy(outputFile, newPath);
+                }
+                printf("Entrez le chemin du fichier (host) a inclure : \n");
                 scanf("%s", inputFile);
-                char *inputFile2 = malloc(sizeof(char) * 100);
-                strcpy(inputFile2, newPath);
-                strcat(inputFile2, inputFile);
+
+                //Recuperer le nom du fichier en cas de chemin/Vers/fichier.txt
+                char *fileName = strrchr(inputFile, '/');  // Trouve le dernier '/' dans la chaîne
+                if (fileName != NULL) {
+                    fileName++;  // passer de /fileName a fileName
+                    strcat(outputFile, fileName);
+                }
+
+                Add_OverwriteFile(zipName, inputFile, outputFile);
+                menu(zipName, lastPath, newPath, 1, 2);
+
+
                 break;
-            case '0':
+            case 0:
                 menu(zipName, "", "/", 1, 0);
                 break;
             default:
@@ -122,22 +141,18 @@ int menu(char *zipName,char *lastPath, char *newPath, int indice, int flag){
                 break;
 
         }
-        
-//        if (number == 0) {
-//        }else{
-//            menu(zipName, newPath, list[number - 1], indice + 1, 0);
-//        }
+
         return 0;
 
     }
 }
 
 
-int menuFile(char *zipName , char *selectFile) {
-//    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+int menuFile(char *zipName, char *selectFile) {
+    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     char *inputFile= malloc(sizeof(char) * 100);
 
-    printf("0 - HOME\n");
+    printf("0 - HOME | -1 - Edit mode\n");
     printf("1 - Extraire le fichier\n");
     printf("2 - Remplacer le fichier\n");
 
@@ -152,7 +167,7 @@ int menuFile(char *zipName , char *selectFile) {
             if (extractFile(zipName, selectFile, "")){
                 menu( zipName, selectFile, "/", 1, 1);
             }else{
-                menu( zipName, selectFile, "/", 1, 2);
+                menu( zipName, selectFile, "/", 1, -1);
             }
 
 
@@ -161,7 +176,12 @@ int menuFile(char *zipName , char *selectFile) {
             printf("Entrez le chemin du fichier nouveau ficher (local au pc) : \n");
             scanf("%s", inputFile);
 
-            Add_OverwriteFile(zipName, inputFile, selectFile);
+            if (Add_OverwriteFile(zipName, inputFile, selectFile)){
+                menu( zipName, selectFile, "/", 1, 2);
+            }else{
+                menu( zipName, selectFile, "/", 1, -2);
+            }
+
             break;
         default:
             printf("Erreur de saisie\n");
