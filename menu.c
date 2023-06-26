@@ -90,7 +90,10 @@ int menu(char *zipName,char *lastPath, char *newPath, int indice, int flag){
             }
         }
 
+
+// AFFICHAGE DU MENU ===========================================================
         // Affiche le contenu du tableau
+        printf("i - inclure un fichier \n");
         printf("0 - HOME\n");
         for (int i = 0; i < line - 1; ++i) {
             printf("%d - %s\n", i + 1, list[i]);
@@ -98,13 +101,32 @@ int menu(char *zipName,char *lastPath, char *newPath, int indice, int flag){
         // Ferme le fichier zip
         zip_close(zip);
 
-        int number;
+        int choice;
         printf("\nFaites un choix : \n");
-        scanf("%d", &number);
-        if (number == 0) {
-            menu(zipName, "", "/", 1, 0);
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 'i':
+                printf("Entrez le chemin du fichier a inclure : \n");
+                char *inputFile = malloc(sizeof(char) * 100);
+                scanf("%s", inputFile);
+                char *inputFile2 = malloc(sizeof(char) * 100);
+                strcpy(inputFile2, newPath);
+                strcat(inputFile2, inputFile);
+                break;
+            case '0':
+                menu(zipName, "", "/", 1, 0);
+                break;
+            default:
+                menu(zipName, list[choice - 1], list[choice - 1], indice + 1, 0);
+                break;
+
         }
-        menu(zipName, newPath, list[number - 1], indice + 1, 0);
+        
+//        if (number == 0) {
+//        }else{
+//            menu(zipName, newPath, list[number - 1], indice + 1, 0);
+//        }
         return 0;
 
     }
