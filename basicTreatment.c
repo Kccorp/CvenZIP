@@ -13,45 +13,38 @@
 
 #define WRONG_PASSWORD 6969
 
-void createFolder(const char *pathFile){
-    int result = mkdir(pathFile, 0777);
 
-    if (result == 0) {
-        printf("Le dossier %s a été créé.\n", pathFile);
-    } else {
-        printf("Impossible de créer le dossier %s.\n", pathFile);
-    }
-}
 int createDirectories(const char *path) {
-
-//    char *token = strrchr(str, '/');
-
-//    if (token != NULL) {
-//        token++;  // passer de "/titi/tutu/toto" à "titi/tutu/toto"
-//        *token = '\0';  // ajouter un caractère nul pour terminer la chaîne
-//    } else {
-//        printf("Le caractère '/' n'a pas été trouvé dans la chaîne.\n");
-//    }
-//
-    
+    // if string /coucou/toto/titi.file => temp = /coucou/toto/
     char temp[100];
     strcpy(temp, path);
+    char *token = strrchr(temp, '/');
 
-    char *token = strtok(temp, "/");
+    if (token != NULL) {
+        token++;  // passer de "/titi/tutu/toto" à "titi/tutu/toto"
+        *token = '\0';  // ajouter un caractère nul pour terminer la chaîne
+    }
+//    printf("path : %s\n", temp);
+
+
+    // Creation 1 par 1 de chaque dossier/sous-dossier du path
+    char *token2 = strtok(temp, "/");
     char currentPath[100] = "";
 
-    while (token != NULL) {
-        strcat(currentPath, token);
+    while (token2 != NULL) {
+        strcat(currentPath, token2);
 
         if (mkdir(currentPath, 0777) == 0) {
             printf("Le dossier %s a été créé.\n", currentPath);
         } else {
-            printf("Impossible de créer le dossier %s.\n", currentPath);
+//            printf("Impossible de créer le dossier %s.\n", currentPath);
         }
 
         strcat(currentPath, "/");
-        token = strtok(NULL, "/");
+        token2 = strtok(NULL, "/");
     }
+
+
     return 0;
 }
 
@@ -77,7 +70,6 @@ int printZipFolder(char *zipName){
 
     // Ferme le fichier zip
     zip_close(zip);
-
     return 0;
 
 }
@@ -190,18 +182,16 @@ int extractAllFiles(char *zipName,char *password) {
 
     // Ferme le fichier zip
     zip_close(zip);
-
     return 0;
 }
 
 int extractFile(char *zipName, char *extractFile,char *password) { //fonction qui va extraire un fichier du zip et le stocker dans le dossier courant
-    createDirectories(extractFile);
-    // Ouvre le fichier zip
 
     isZipPasswordEncrypted(zipName,password,0);
     if (strcmp(extractFile,"all") == 0){
         extractAllFiles(zipName, password);
     }else{
+
         // Ouvre le fichier zip
         int error;
         zip_t *zip = zip_open(zipName, 0, &error);
@@ -216,14 +206,10 @@ int extractFile(char *zipName, char *extractFile,char *password) { //fonction qu
         }
 
 
-
-
-
         // EXTRACT FILE
         struct zip_file *file;
         char buffer[100]; //buffer qui va contenir le contenu du fichier , a modifier pour que ça soit dynamique
         int len;
-        int err;
 
         printf("Extraction en cours de '%s'...\n", extractFile);
 
@@ -231,8 +217,9 @@ int extractFile(char *zipName, char *extractFile,char *password) { //fonction qu
         file = zip_fopen_encrypted(zip, extractFile, 0, password); // Utilisez zip_fopen_encrypted pour ouvrir un fichier zip protégé par mot de passe
         if (file == NULL) {
             printf("1 - Impossible d'ouvrir le fichier '%s': %s\n", extractFile, zip_strerror(zip));
-            return WRONG_PASSWORD;
+            return 1;
         }
+        createDirectories(extractFile);
 
 
         FILE *outfile = fopen(extractFile, "w");

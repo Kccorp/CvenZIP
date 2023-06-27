@@ -36,6 +36,9 @@ int menu(char *zipName,char *lastPath, char *newPath, int indice, int flag){
             case 3:
                 printf("Insertion du fichier réussi\n\n");
                 break;
+            case -3:
+                printf("ECHEC de l'insertion du fichier\n\n");
+                break;
             default:
                 break;
         }
@@ -113,6 +116,7 @@ int menu(char *zipName,char *lastPath, char *newPath, int indice, int flag){
 
         switch (choice) {
             case -1:
+                //get current path (/ = fake default path)
                 if (strcmp(newPath, "/") == 0) {
                     strcpy(outputFile, "");
                 } else {
@@ -128,8 +132,11 @@ int menu(char *zipName,char *lastPath, char *newPath, int indice, int flag){
                     strcat(outputFile, fileName);
                 }
 
-                Add_OverwriteFile(zipName, inputFile, outputFile);
-                menu(zipName, lastPath, newPath, 1, 2);
+                //include file
+
+                if (Add_OverwriteFile(zipName, inputFile, outputFile)){
+                    menu(zipName, lastPath, newPath, 1, 2);
+                }else
 
 
                 break;
@@ -177,9 +184,9 @@ int menuFile(char *zipName, char *selectFile) {
             scanf("%s", inputFile);
 
             if (Add_OverwriteFile(zipName, inputFile, selectFile)){
-                menu( zipName, selectFile, "/", 1, 2);
+                menu( zipName, selectFile, "/", 1, 3);
             }else{
-                menu( zipName, selectFile, "/", 1, -2);
+                menu( zipName, selectFile, "/", 1, -3);
             }
 
             break;
