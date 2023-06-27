@@ -10,13 +10,13 @@ void clear(){
     printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 }
 
-int menu(char *zipName,char *lastPath, char *newPath, int indice, int flag){
+int menu(char *zipName,char *lastPath, char *newPath, int indice, int flag, char *password){
     char *inputFile = malloc(sizeof(char) * 100);
     char *outputFile = malloc(sizeof(char) * 100);
     int longueur = strlen(newPath);
 
     if (newPath[longueur - 1] != '/') {
-        menuFile(zipName, newPath);
+        menuFile(zipName, newPath, password);
     } else {
 
         clear();
@@ -103,7 +103,7 @@ int menu(char *zipName,char *lastPath, char *newPath, int indice, int flag){
 // AFFICHAGE DU MENU ===========================================================
         // Affiche le contenu du tableau
         printf("-1 - inclure un fichier \n");
-        printf("0 - HOME\n");
+        printf("0 - DOMICILE\n");
         for (int i = 0; i < line - 1; ++i) {
             printf("%d - %s\n", i + 1, list[i]);
         }
@@ -135,16 +135,16 @@ int menu(char *zipName,char *lastPath, char *newPath, int indice, int flag){
                 //include file
 
                 if (Add_OverwriteFile(zipName, inputFile, outputFile)){
-                    menu(zipName, lastPath, newPath, 1, 2);
+                    menu(zipName, lastPath, newPath, 1, 2, password);
                 }else
 
 
                 break;
             case 0:
-                menu(zipName, "", "/", 1, 0);
+                menu(zipName, "", "/", 1, 0, password);
                 break;
             default:
-                menu(zipName, list[choice - 1], list[choice - 1], indice + 1, 0);
+                menu(zipName, list[choice - 1], list[choice - 1], indice + 1, 0, password);
                 break;
 
         }
@@ -155,11 +155,11 @@ int menu(char *zipName,char *lastPath, char *newPath, int indice, int flag){
 }
 
 
-int menuFile(char *zipName, char *selectFile) {
-    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+int menuFile(char *zipName, char *selectFile, char *password) {
+    clear();
     char *inputFile= malloc(sizeof(char) * 100);
 
-    printf("0 - HOME | -1 - Edit mode\n");
+    printf("0 - DOMICILE\n");
     printf("1 - Extraire le fichier\n");
     printf("2 - Remplacer le fichier\n");
 
@@ -168,13 +168,13 @@ int menuFile(char *zipName, char *selectFile) {
     scanf("%d", &number);
     switch (number) {
         case 0:
-            menu( zipName, selectFile, "/", 1, 0);
+            menu( zipName, selectFile, "/", 1, 0, password);
             break;
         case 1:
-            if (extractFile(zipName, selectFile, "")){
-                menu( zipName, selectFile, "/", 1, 1);
+            if (extractFile(zipName, selectFile, password)){
+                menu( zipName, selectFile, "/", 1, 1, password);
             }else{
-                menu( zipName, selectFile, "/", 1, -1);
+                menu( zipName, selectFile, "/", 1, -1, password);
             }
 
 
@@ -184,9 +184,9 @@ int menuFile(char *zipName, char *selectFile) {
             scanf("%s", inputFile);
 
             if (Add_OverwriteFile(zipName, inputFile, selectFile)){
-                menu( zipName, selectFile, "/", 1, 3);
+                menu( zipName, selectFile, "/", 1, 3, password);
             }else{
-                menu( zipName, selectFile, "/", 1, -3);
+                menu( zipName, selectFile, "/", 1, -3, password);
             }
 
             break;
