@@ -223,7 +223,7 @@ void *iterativeBrutforce(void *parameters) {
 void workerBrutforce(char *current, int len, char *chars, char *fileToCrack) {
 
     if (strlen(current) == len){
-        printf("%s\n", current);
+//        printf("%s\n", current);
         if (isZipPasswordEncrypted(fileToCrack, current, 1) == 0){
             printf("\nLe mot de passe est : %s", current);
             exit(0);
