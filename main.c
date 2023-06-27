@@ -5,7 +5,6 @@
 #include "basicTreatment.h"
 #include "brutforceFile.h"
 #include "menu.h"
-#include <sys/stat.h>
 
 #define MAX_ZIPNAME_LENGTH 256
 #define MAX_PASSWORD_LENGTH 256
@@ -33,7 +32,7 @@ int main(int argc, char *argv[]) {
     //for --args parsing (getopt) and their equibalent with -h
     struct option longopts[] = {
             {"help", no_argument, NULL, 'h'},
-            {"test", no_argument, NULL, 't'},
+            {"menu", no_argument, NULL, 'm'},
             {"extract", no_argument, NULL, 'e'},
             {"password", required_argument, NULL, 'p'}, //{"password", required_argument, NULL, 'p
             {"include", required_argument, NULL, 'i'},
@@ -66,9 +65,9 @@ int main(int argc, char *argv[]) {
 
     int c;
     int index = 0;
-    while ((c = getopt_long(argc, argv, "he:i:st", longopts, &index)) != -1) {
+    while ((c = getopt_long(argc, argv, "he:i:sm", longopts, &index)) != -1) {
         switch (c) {
-            case 't':
+            case 'm':
                 menu(zipName, "","/", 1, 0, password);
                 break;
             case 'h':
