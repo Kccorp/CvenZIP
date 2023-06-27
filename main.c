@@ -13,8 +13,6 @@
 
 
 int main(int argc, char *argv[]) {
-    // Créer le dossier
-
 
     char *password = malloc(sizeof(char) * MAX_PASSWORD_LENGTH);
 

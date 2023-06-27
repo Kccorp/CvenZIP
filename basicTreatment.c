@@ -13,22 +13,48 @@
 
 #define WRONG_PASSWORD 6969
 
-int createParentDirectories(const char *path) {
+void createFolder(const char *pathFile){
+    int result = mkdir(pathFile, 0777);
+
+    if (result == 0) {
+        printf("Le dossier %s a été créé.\n", pathFile);
+    } else {
+        printf("Impossible de créer le dossier %s.\n", pathFile);
+    }
+}
+int createDirectories(const char *path) {
+
+//    char *token = strrchr(str, '/');
+
+//    if (token != NULL) {
+//        token++;  // passer de "/titi/tutu/toto" à "titi/tutu/toto"
+//        *token = '\0';  // ajouter un caractère nul pour terminer la chaîne
+//    } else {
+//        printf("Le caractère '/' n'a pas été trouvé dans la chaîne.\n");
+//    }
+//
+    
     char temp[100];
     strcpy(temp, path);
-    char *delimiter = strrchr(temp, '/');
 
-    if (delimiter != NULL) {
-        *delimiter = '\0';  // Supprime le dernier '/'
-        if (mkdir(temp, 0777) != 0) {  // Crée le dossier parent
-            printf("Impossible de créer le dossier parent : %s\n", temp);
-            return 1;
+    char *token = strtok(temp, "/");
+    char currentPath[100] = "";
+
+    while (token != NULL) {
+        strcat(currentPath, token);
+
+        if (mkdir(currentPath, 0777) == 0) {
+            printf("Le dossier %s a été créé.\n", currentPath);
+        } else {
+            printf("Impossible de créer le dossier %s.\n", currentPath);
         }
-        *delimiter = '/';  // Restaure le dernier '/'
-    }
 
+        strcat(currentPath, "/");
+        token = strtok(NULL, "/");
+    }
     return 0;
 }
+
 int printZipFolder(char *zipName){
     // Ouvre le fichier zip
     int error;
@@ -155,16 +181,9 @@ int extractAllFiles(char *zipName,char *password) {
         printf("%s\n", pathFile);
 
         if (strlen(pathFile) > 0 && pathFile[strlen(pathFile) - 1] == '/') {
-            int result = mkdir(pathFile, 0777);
-
-            if (result == 0) {
-                printf("Le dossier %s a été créé.\n", pathFile);
-            } else {
-                printf("Impossible de créer le dossier %s.\n", pathFile);
-            }
+            createDirectories(pathFile);
         } else {
             extractFile (zipName,pathFile,password);
-            return 0;  // La chaîne ne se termine pas par "/"
         }
 
     }
@@ -176,41 +195,9 @@ int extractAllFiles(char *zipName,char *password) {
 }
 
 int extractFile(char *zipName, char *extractFile,char *password) { //fonction qui va extraire un fichier du zip et le stocker dans le dossier courant
+    createDirectories(extractFile);
+    // Ouvre le fichier zip
 
-//    // Création des dossiers de destination
-//    // Get string avant le dernier '/'
-//    char temp[100];
-//    strcpy(temp, extractFile);
-//    char *pathToExtract = strrchr(temp, '/');  // Trouve la dernière occurrence de '/' dans la chaîne
-//
-//    if (pathToExtract != NULL) {
-//        *(pathToExtract + 1) = '\0';  // Ajoute un caractère nul pour terminer la sous-chaîne à cet emplacement
-////            printf("Résultat : %s\n", temp); // Affiche le chemin du dossier de destination
-//    } else {
-//        printf("Erreur lors de la recuperation du chemin de destination.\n");
-//        return 1;
-//    }
-//    //MKDIR
-//    printf("zipname : %s\n",zipName);
-//    printf("extractFile : %s\n",extractFile);
-//    printf("temp : %s\n",temp);
-//
-//    int result = mkdir(temp, 0777);
-//
-//    if (result == 0) {
-//        printf("Le dossier %s a été créé.\n", temp);
-//    } else {
-//        printf("Impossible de créer le dossier %s .\n", temp);
-//    }
-
-
-    if (createParentDirectories(extractFile) == 0) {
-        if (mkdir(extractFile, 0777) == 0) {
-            printf("Le dossier %s a été créé.\n", extractFile);
-        } else {
-            printf("Impossible de créer le dossier %s.\n", extractFile);
-        }
-    }
     isZipPasswordEncrypted(zipName,password,0);
     if (strcmp(extractFile,"all") == 0){
         extractAllFiles(zipName, password);
@@ -274,7 +261,7 @@ int extractFile(char *zipName, char *extractFile,char *password) { //fonction qu
     }
 }
 
-int Add_OverwriteFile(const char* fileZip, const char* pathFileInput, const char * pathFileOutput)
+int Add_OverwriteFile(char* fileZip, char* pathFileInput, char * pathFileOutput)
 {
 
     // Default output is input
